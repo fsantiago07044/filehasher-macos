@@ -41,7 +41,7 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.utilities
         LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
-        NSHumanReadableCopyright: "Copyright © 2026 FSP Productions, LLC"
+        NSHumanReadableCopyright: "Copyright © 2026 Fabian Santiago"
         # The app performs hashing only — no encryption — so it qualifies as
         # exempt for App Store export compliance.
         ITSAppUsesNonExemptEncryption: false

@@ -27,6 +27,6 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2026 FSP Productions, LLC</string>
+	<string>Copyright © 2026 Fabian Santiago</string>
 </dict>
 </plist>

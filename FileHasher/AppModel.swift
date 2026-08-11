@@ -723,7 +723,7 @@ final class AppModel: ObservableObject {
             + "A file and folder hashing utility for macOS,\n"
             + "derived from FileHasher for Windows.\n\n"
             + "Author: Fabian Santiago\n"
-            + "Copyright © 2026 FSP Productions, LLC"
+            + "Copyright © 2026 Fabian Santiago"
         alert.alertStyle = .informational
         alert.runModal()
     }

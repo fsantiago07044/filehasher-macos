@@ -101,4 +101,4 @@ which grew out of an original PowerShell hashing script.
 
 ## License
 
-[MIT](LICENSE) — © 2026 Fabian Santiago, FSP Productions, LLC
+[MIT](LICENSE) — © 2026 Fabian Santiago
