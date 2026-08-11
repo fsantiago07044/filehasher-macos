@@ -1,0 +1,462 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0871601E03366A4FA7256A3C /* HashAlgorithmKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6469E08250441199B96114D7 /* HashAlgorithmKind.swift */; };
+		0BAE9B724426FB72A48A2110 /* HashOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717107632C6187D96647092 /* HashOptions.swift */; };
+		2752C3C334EBBDE631441A47 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1504962E68C68D467C8EF6 /* Logger.swift */; };
+		2C56C844EB5F1F04822184AB /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */; };
+		43F723012A635EF962FC13E4 /* CsvExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B83D82117A971049DBD60E /* CsvExporter.swift */; };
+		5CC4C46C796FD00AC5BB49BF /* FileHasherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */; };
+		5FA3D7619B9904704CCD2723 /* SidecarVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */; };
+		6F0E4C01BC0360DEE60C1DBA /* HashEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */; };
+		A23C909C238FF5D0FD20573C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95E7763A308932291E7FD76A /* Assets.xcassets */; };
+		AB27128F5646D11799177DD9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264274B121942D05B58B5796 /* ContentView.swift */; };
+		E4AC48E79FE550FD71DE0F5D /* HashWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7583868A0F89D0861B2A2F99 /* HashWorker.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F5308578BF3A0308A2662A14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D3321AA06294195BF1B9DFB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 51B46D621468F27B6E2236F9;
+			remoteInfo = FileHasher;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHasherApp.swift; sourceTree = "<group>"; };
+		264274B121942D05B58B5796 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		39F9FE59FD909DFB6C535D23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		50B83D82117A971049DBD60E /* CsvExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvExporter.swift; sourceTree = "<group>"; };
+		6469E08250441199B96114D7 /* HashAlgorithmKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashAlgorithmKind.swift; sourceTree = "<group>"; };
+		70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidecarVerifier.swift; sourceTree = "<group>"; };
+		737B706F943D41C0495FC412 /* FileHasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FileHasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		744E817FDA542C967458C619 /* FileHasherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FileHasherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7583868A0F89D0861B2A2F99 /* HashWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashWorker.swift; sourceTree = "<group>"; };
+		95E7763A308932291E7FD76A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashEngineTests.swift; sourceTree = "<group>"; };
+		A17B92C1E250AFD9CE3354E0 /* FileHasher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileHasher.entitlements; sourceTree = "<group>"; };
+		BB1504962E68C68D467C8EF6 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		D717107632C6187D96647092 /* HashOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashOptions.swift; sourceTree = "<group>"; };
+		E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		40FD1A5A98E292C86C0A3140 /* FileHasher */ = {
+			isa = PBXGroup;
+			children = (
+				E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */,
+				95E7763A308932291E7FD76A /* Assets.xcassets */,
+				264274B121942D05B58B5796 /* ContentView.swift */,
+				A17B92C1E250AFD9CE3354E0 /* FileHasher.entitlements */,
+				1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */,
+				39F9FE59FD909DFB6C535D23 /* Info.plist */,
+				41079FE30CDFCA333E90DC45 /* HashEngine */,
+			);
+			path = FileHasher;
+			sourceTree = "<group>";
+		};
+		41079FE30CDFCA333E90DC45 /* HashEngine */ = {
+			isa = PBXGroup;
+			children = (
+				50B83D82117A971049DBD60E /* CsvExporter.swift */,
+				6469E08250441199B96114D7 /* HashAlgorithmKind.swift */,
+				D717107632C6187D96647092 /* HashOptions.swift */,
+				7583868A0F89D0861B2A2F99 /* HashWorker.swift */,
+				BB1504962E68C68D467C8EF6 /* Logger.swift */,
+				70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */,
+			);
+			path = HashEngine;
+			sourceTree = "<group>";
+		};
+		65545DE4B9FA1C7A69F264FB = {
+			isa = PBXGroup;
+			children = (
+				40FD1A5A98E292C86C0A3140 /* FileHasher */,
+				E6FD23B9EB4E1576910FA63F /* FileHasherTests */,
+				ACF123B6BE0EB94FB15197EF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ACF123B6BE0EB94FB15197EF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				737B706F943D41C0495FC412 /* FileHasher.app */,
+				744E817FDA542C967458C619 /* FileHasherTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E6FD23B9EB4E1576910FA63F /* FileHasherTests */ = {
+			isa = PBXGroup;
+			children = (
+				99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */,
+			);
+			path = FileHasherTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		51B46D621468F27B6E2236F9 /* FileHasher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A412E81B1717B066D7361E9A /* Build configuration list for PBXNativeTarget "FileHasher" */;
+			buildPhases = (
+				285935E42B81DD6BE95238A1 /* Sources */,
+				D534A6BF34D52B121F49E2A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FileHasher;
+			packageProductDependencies = (
+			);
+			productName = FileHasher;
+			productReference = 737B706F943D41C0495FC412 /* FileHasher.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F9262124517307652FFAD68A /* FileHasherTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8D9A35C8AAB4F7F9DA88D869 /* Build configuration list for PBXNativeTarget "FileHasherTests" */;
+			buildPhases = (
+				8DE60F4E41291FC349C1C7FC /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6C3AA0418FF35F864122A09E /* PBXTargetDependency */,
+			);
+			name = FileHasherTests;
+			packageProductDependencies = (
+			);
+			productName = FileHasherTests;
+			productReference = 744E817FDA542C967458C619 /* FileHasherTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6D3321AA06294195BF1B9DFB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					51B46D621468F27B6E2236F9 = {
+						DevelopmentTeam = 49KP5XUP9W;
+						ProvisioningStyle = Automatic;
+					};
+					F9262124517307652FFAD68A = {
+						DevelopmentTeam = 49KP5XUP9W;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 094EE107669C69F1F3BAA948 /* Build configuration list for PBXProject "FileHasher" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 65545DE4B9FA1C7A69F264FB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = ACF123B6BE0EB94FB15197EF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				51B46D621468F27B6E2236F9 /* FileHasher */,
+				F9262124517307652FFAD68A /* FileHasherTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D534A6BF34D52B121F49E2A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A23C909C238FF5D0FD20573C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		285935E42B81DD6BE95238A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C56C844EB5F1F04822184AB /* AppModel.swift in Sources */,
+				AB27128F5646D11799177DD9 /* ContentView.swift in Sources */,
+				43F723012A635EF962FC13E4 /* CsvExporter.swift in Sources */,
+				5CC4C46C796FD00AC5BB49BF /* FileHasherApp.swift in Sources */,
+				0871601E03366A4FA7256A3C /* HashAlgorithmKind.swift in Sources */,
+				0BAE9B724426FB72A48A2110 /* HashOptions.swift in Sources */,
+				E4AC48E79FE550FD71DE0F5D /* HashWorker.swift in Sources */,
+				2752C3C334EBBDE631441A47 /* Logger.swift in Sources */,
+				5FA3D7619B9904704CCD2723 /* SidecarVerifier.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8DE60F4E41291FC349C1C7FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F0E4C01BC0360DEE60C1DBA /* HashEngineTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6C3AA0418FF35F864122A09E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 51B46D621468F27B6E2236F9 /* FileHasher */;
+			targetProxy = F5308578BF3A0308A2662A14 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1A890E2A6663296F8C7D9383 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasherTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FileHasher.app/Contents/MacOS/FileHasher";
+			};
+			name = Release;
+		};
+		1F9D987F11CD6D2FD360AD2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FileHasher/FileHasher.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FileHasher/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasher;
+				PRODUCT_NAME = FileHasher;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5348D1AFCF37D960CBD79412 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = x86_64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 49KP5XUP9W;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		540E8FE9A473EF741D71F98D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = x86_64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 49KP5XUP9W;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		63BE285D55D2C382C5F02A84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasherTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FileHasher.app/Contents/MacOS/FileHasher";
+			};
+			name = Debug;
+		};
+		F4282522B2404E9A18B4314F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FileHasher/FileHasher.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FileHasher/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasher;
+				PRODUCT_NAME = FileHasher;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		094EE107669C69F1F3BAA948 /* Build configuration list for PBXProject "FileHasher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5348D1AFCF37D960CBD79412 /* Debug */,
+				540E8FE9A473EF741D71F98D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8D9A35C8AAB4F7F9DA88D869 /* Build configuration list for PBXNativeTarget "FileHasherTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				63BE285D55D2C382C5F02A84 /* Debug */,
+				1A890E2A6663296F8C7D9383 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A412E81B1717B066D7361E9A /* Build configuration list for PBXNativeTarget "FileHasher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F9D987F11CD6D2FD360AD2A /* Debug */,
+				F4282522B2404E9A18B4314F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6D3321AA06294195BF1B9DFB /* Project object */;
+}

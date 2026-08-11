@@ -1,0 +1,74 @@
+# Xcode project definition — regenerate FileHasher.xcodeproj with:
+#   xcodegen generate
+# (brew install xcodegen)
+name: FileHasher
+options:
+  bundleIdPrefix: com.fabianasantiago
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    # Intel-only for now — the maintainer has no Apple Silicon hardware to
+    # build or test on. Flip to "$(ARCHS_STANDARD)" to go universal later.
+    ARCHS: x86_64
+    DEVELOPMENT_TEAM: 49KP5XUP9W
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: 0.1.0
+    CURRENT_PROJECT_VERSION: 1
+
+targets:
+  FileHasher:
+    type: application
+    platform: macOS
+    sources:
+      - FileHasher
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fabianasantiago.FileHasher
+        PRODUCT_NAME: FileHasher
+        CODE_SIGN_ENTITLEMENTS: FileHasher/FileHasher.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+    info:
+      path: FileHasher/Info.plist
+      properties:
+        CFBundleDisplayName: FileHasher
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "Copyright © 2026 FSP Productions, LLC"
+        # The app performs hashing only — no encryption — so it qualifies as
+        # exempt for App Store export compliance.
+        ITSAppUsesNonExemptEncryption: false
+
+  FileHasherTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - FileHasherTests
+    dependencies:
+      - target: FileHasher
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fabianasantiago.FileHasherTests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  FileHasher:
+    build:
+      targets:
+        FileHasher: all
+        FileHasherTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - FileHasherTests
+    archive:
+      config: Release
