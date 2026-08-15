@@ -81,7 +81,7 @@ FileHasher for macOS shares its lineage with FileHasher for Windows; sidecar fil
 - Copyright: `© 2026 Fabian Santiago`
 - Version: 1.0.0
 - SKU suggestion: `filehasher-macos`
-- Pricing: **TBD by Fabian** (free or paid — decide before creating the record)
+- Pricing: **Free** (price tier 0 in all territories)
 
 ## Screenshots (docs/app-store/)
 
