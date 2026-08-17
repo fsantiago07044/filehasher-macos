@@ -5,9 +5,11 @@ A utility to hash files and folders, write sidecar hash files, verify them later
 > **Derived from [FileHasher for Windows](https://gitlab.gjb-online.com/root/filehasher).**
 > This repository is a native macOS (SwiftUI) port of the Windows WinForms application and is
 > maintained as a fork-linked sibling project. The app itself is named **FileHasher** on both
-> platforms. Feature behavior — scan filters, sidecar formats, verification verdicts, CSV layout,
-> log format — is kept deliberately identical so sidecars and CSVs produced on one platform
-> verify and compare cleanly on the other.
+> platforms. Output behavior (sidecar formats, verification verdicts, CSV layout, log format)
+> is kept deliberately identical so sidecars and CSVs produced on one platform verify and
+> compare cleanly on the other. Folder-scan defaults differ by design: the Windows app's
+> .exe/.msi installer focus is a Windows convention, so the macOS app scans all files by
+> default, with opt-in recursion and an optional user-defined file-type limit.
 
 ---
 
@@ -39,10 +41,13 @@ Or just open `FileHasher.xcodeproj` in Xcode and press ⌘R.
 The UI mirrors the Windows app:
 
 - **Target** — pick a file or folder with the browse buttons, drag-and-drop onto the
-  Target box, or type a path. Folders are scanned **recursively**.
-- **Scan all file types** — when scanning a folder: unchecked (default) hashes only
-  `.exe` and `.msi` files (the app's installer-verification heritage); checked hashes
-  every file in the tree.
+  Target box, or type a path. Folder scans hash **every file by default**, top level only.
+- **Include subfolders** — check to scan the folder recursively (off by default).
+- **Limit to file types** — optionally restrict a folder scan to a comma-separated
+  list of extensions you type yourself (a Suggestions menu offers common ones:
+  pkg, dmg, iso, zip, exe, msi). Off, or an empty list, means every file is scanned.
+  The same limit drives the verify audit: only matching files are reported as
+  `NO SIDECAR`.
 - **Hash Algorithm** — MD5, SHA1, SHA256 (default), SHA512.
 - **Include file metadata** — adds Size and Modified (UTC) columns to results and CSV.
 - **Write sidecar hash files** — writes e.g. `setup.exe.sha256` next to each hashed file.

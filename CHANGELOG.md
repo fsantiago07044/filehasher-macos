@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0 (build 2), 2026-08-16
+
+Folder scanning redesigned for macOS conventions (the Windows app keeps its
+installer-focused defaults; the two apps remain output-compatible):
+
+- Folder scans now hash **all files by default**; the Windows-inherited
+  .exe/.msi default filter is gone
+- **Include subfolders** option; recursion is now opt-in instead of always on
+- **Limit to file types** option: a user-typed, comma-separated extension list
+  with macOS-appropriate suggestions (pkg, dmg, iso, zip, exe, msi); nothing is
+  pre-filled. The verify audit ("NO SIDECAR") honors the same limit
+- Build number bumped for App Store resubmission
+
 ## 0.1.0 — 2026-08-11
 
 Initial macOS port of FileHasher for Windows (SwiftUI, Intel x86_64, sandboxed).

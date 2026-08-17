@@ -11,27 +11,31 @@ enum WorkerMessage: Sendable {
 }
 
 /// Enumerates and hashes files according to `HashOptions`. Pure synchronous
-/// logic — the caller runs it on a background task and receives results
+/// logic; the caller runs it on a background task and receives results
 /// through the `emit` callback. Direct port of the Windows HashWorker.
 struct HashWorker: Sendable {
     let options: HashOptions
     let cancel: CancelFlag
 
-    /// Extensions hashed when "Scan all file types" is off — matches the
-    /// Windows app (and the original PowerShell script's) installer focus.
-    static let defaultExtensions: Set<String> = ["exe", "msi"]
+    /// True when the file passes the optional file-type limit. An empty filter
+    /// means every file matches.
+    static func matchesFilter(_ path: String, _ filter: Set<String>) -> Bool {
+        filter.isEmpty || filter.contains((path as NSString).pathExtension.lowercased())
+    }
 
     // ── Phase 1: enumeration (returns before any hashing begins) ─────────────
 
-    /// Recursively collects target files. Unreadable directories produce a
-    /// warning instead of aborting the run.
+    /// Collects target files: all files in the folder by default, descending
+    /// into subfolders only when `recursive` is on, limited to the user's file
+    /// types when a filter is set. Unreadable directories produce a warning
+    /// instead of aborting the run.
     func enumerateFiles() throws -> (files: [String], warnings: [String]) {
         if options.isFile {
             return ([options.targetPath], [])
         }
 
-        let restrictExtensions = !options.allFileTypes
-        // When writing sidecars, never treat sidecar files themselves as targets —
+        let filter = Set(options.fileTypeFilter)
+        // When writing sidecars, never treat sidecar files themselves as targets;
         // that would create .sha256.sha256 chains on repeated runs.
         let sidecarExt = options.writeSidecarHashes
             ? options.sidecarExtension.lowercased()
@@ -60,7 +64,9 @@ struct HashWorker: Sendable {
                 guard fm.fileExists(atPath: full, isDirectory: &isDir) else { continue }
 
                 if isDir.boolValue {
-                    stack.append(full)
+                    if options.recursive {
+                        stack.append(full)
+                    }
                     continue
                 }
 
@@ -68,10 +74,7 @@ struct HashWorker: Sendable {
                     continue
                 }
 
-                if restrictExtensions {
-                    let ext = (full as NSString).pathExtension.lowercased()
-                    guard Self.defaultExtensions.contains(ext) else { continue }
-                }
+                guard Self.matchesFilter(full, filter) else { continue }
 
                 results.append(full)
             }

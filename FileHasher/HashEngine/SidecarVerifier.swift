@@ -57,7 +57,8 @@ struct SidecarVerifier: Sendable {
     let targetPath: String
     let isFile: Bool
     let sidecarExtension: String
-    let allFileTypes: Bool
+    let recursive: Bool            // folder targets: descend into subfolders
+    let fileTypeFilter: [String]   // empty = audit every file lacking a sidecar
     let cancel: CancelFlag
 
     // ── Phase 1: enumeration ─────────────────────────────────────────────────
@@ -81,8 +82,9 @@ struct SidecarVerifier: Sendable {
             return ([item], [])
         }
 
-        // Folder: one recursive walk (same warning behavior as HashWorker),
-        // then partition into sidecars and filter-matching files lacking one.
+        // Folder: one walk with the same recursion rule and warning behavior
+        // as HashWorker, then partition into sidecars and filter-matching
+        // files lacking one.
         var all:      [String] = []
         var warnings: [String] = []
         var stack = [targetPath]
@@ -103,7 +105,9 @@ struct SidecarVerifier: Sendable {
                 var isDir: ObjCBool = false
                 guard fm.fileExists(atPath: full, isDirectory: &isDir) else { continue }
                 if isDir.boolValue {
-                    stack.append(full)
+                    if recursive {
+                        stack.append(full)
+                    }
                 } else {
                     all.append(full)
                 }
@@ -119,14 +123,12 @@ struct SidecarVerifier: Sendable {
             items.append(WorkItem(baseFile: base, sidecarPath: f))
         }
 
-        // Completeness audit: files the hashing scan filter would pick up
-        // (same rule as HashWorker.enumerateFiles) that have no sidecar.
+        // Completeness audit: files the hashing scan would pick up (same
+        // file-type rule as HashWorker.enumerateFiles) that have no sidecar.
+        let filter = Set(fileTypeFilter)
         for f in all {
             if f.lowercased().hasSuffix(extLC) { continue }
-            if !allFileTypes {
-                let fileExt = (f as NSString).pathExtension.lowercased()
-                guard HashWorker.defaultExtensions.contains(fileExt) else { continue }
-            }
+            guard HashWorker.matchesFilter(f, filter) else { continue }
             if !bases.contains(f.lowercased()) {
                 items.append(WorkItem(baseFile: f, sidecarPath: nil))
             }
@@ -194,7 +196,7 @@ struct SidecarVerifier: Sendable {
 
         // All three formats are "HASH" optionally followed by " *"-prefixed
         // fields (filename, then ISO date and size for extended). A filename
-        // containing the literal sequence " *" would split wrong; accepted —
+        // containing the literal sequence " *" would split wrong; accepted:
         // it only affects the informational notes, never pass/fail.
         let fields   = line.components(separatedBy: " *")
         let expected = fields[0].trimmingCharacters(in: .whitespaces)
@@ -232,7 +234,7 @@ struct SidecarVerifier: Sendable {
                                 detail: "expected \(expected), computed \(actual)")
         }
 
-        // Hash matches — remaining fields are informational only.
+        // Hash matches; remaining fields are informational only.
         var notes: [String] = []
         let fm = FileManager.default
         if let attrs = try? fm.attributesOfItem(atPath: item.baseFile) {
@@ -246,7 +248,7 @@ struct SidecarVerifier: Sendable {
             if fields.count >= 4 {
                 if let sidecarUtc = HashTimestamp.iso.date(from: fields[2]),
                    let fileDate = attrs[.modificationDate] as? Date {
-                    // Compare at whole-second precision — that's all the sidecar stores.
+                    // Compare at whole-second precision; that's all the sidecar stores.
                     let fileUtc = Date(timeIntervalSince1970:
                                         fileDate.timeIntervalSince1970.rounded(.down))
                     if sidecarUtc != fileUtc {
@@ -262,7 +264,7 @@ struct SidecarVerifier: Sendable {
                 }
             }
         }
-        // A metadata read failure never demotes an OK row — notes are best-effort.
+        // A metadata read failure never demotes an OK row; notes are best-effort.
 
         return VerifyResult(filePath: item.baseFile, sidecarPath: sidecarPath,
                             status: .ok, algorithm: algorithm, computedHash: actual,

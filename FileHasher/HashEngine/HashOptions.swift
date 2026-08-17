@@ -2,7 +2,7 @@ import Foundation
 
 /// Content layout of a sidecar hash file.
 enum SidecarFormat: String, CaseIterable, Identifiable, Sendable {
-    /// `HASH *filename` — the md5sum/sha1sum/sha256sum/sha512sum tool line format.
+    /// `HASH *filename`: the md5sum/sha1sum/sha256sum/sha512sum tool line format.
     case algoSum  = "algosum"
     /// The raw hash string with no filename.
     case hashOnly = "hashonly"
@@ -21,7 +21,24 @@ struct HashOptions: Sendable {
     var writeSidecarHashes: Bool
     var sidecarExtension: String   // e.g. ".sha256"
     var sidecarFormat: SidecarFormat
-    var allFileTypes: Bool         // false = .exe/.msi only when scanning a folder
+    var recursive: Bool            // folder targets: descend into subfolders (off by default)
+    var fileTypeFilter: [String]   // lowercased extensions without dots; empty = hash all files
+
+    /// Parses a user-typed, comma-separated list of file types into normalized
+    /// extensions: trimmed, leading dots stripped, lowercased, de-duplicated,
+    /// original order preserved. "pkg, .DMG, zip,, dmg" -> ["pkg", "dmg", "zip"].
+    static func parseFileTypes(_ raw: String) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        for piece in raw.split(whereSeparator: { $0 == "," || $0 == " " }) {
+            var ext = piece.trimmingCharacters(in: .whitespaces).lowercased()
+            while ext.hasPrefix(".") { ext.removeFirst() }
+            if !ext.isEmpty, seen.insert(ext).inserted {
+                result.append(ext)
+            }
+        }
+        return result
+    }
 }
 
 /// Outcome of hashing a single file.
@@ -44,7 +61,7 @@ enum HashTimestamp {
         return f
     }()
 
-    /// "yyyy-MM-dd HH:mm:ss" in UTC — the results-table display format.
+    /// "yyyy-MM-dd HH:mm:ss" in UTC: the results-table display format.
     static let display: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd HH:mm:ss"

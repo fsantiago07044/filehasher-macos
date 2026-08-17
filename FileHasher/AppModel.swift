@@ -33,10 +33,17 @@ final class AppModel: ObservableObject {
 
     // ── Target ───────────────────────────────────────────────────────────────
     @Published var targetPath = "" {
-        didSet { updateAllTypesEnabled() }
+        didSet { updateFolderOptionsEnabled() }
     }
-    @Published var allFileTypes = false
-    @Published private(set) var allTypesEnabled = false
+    @Published var scanRecursively = false
+    @Published var limitFileTypes = false
+    @Published var fileTypesText = ""
+    @Published private(set) var folderOptionsEnabled = false
+
+    /// macOS-appropriate suggestions for the file-type limit. Suggestions only;
+    /// nothing is pre-filled. exe/msi stay available for anyone verifying
+    /// Windows installers from a Mac.
+    static let fileTypeSuggestions = ["pkg", "dmg", "iso", "zip", "exe", "msi"]
 
     // ── Algorithm ────────────────────────────────────────────────────────────
     @Published var algorithm: HashAlgorithmKind = .sha256 {
@@ -115,22 +122,30 @@ final class AppModel: ObservableObject {
         targetPath = url.path
     }
 
-    /// The AllTypes filter only matters when more than one file will be hashed,
-    /// i.e. when the target is a folder. (The Windows app has a second case for
-    /// its experimental MSI inner scan, which has no macOS equivalent.)
-    private func updateAllTypesEnabled() {
+    /// Recursion and the file-type limit only matter when more than one file
+    /// could be hashed, i.e. when the target is a folder.
+    private func updateFolderOptionsEnabled() {
         let path = targetPath.trimmingCharacters(in: .whitespaces)
         var isDir: ObjCBool = false
-        allTypesEnabled = !path.isEmpty
+        folderOptionsEnabled = !path.isEmpty
             && FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
             && isDir.boolValue
+    }
+
+    /// Appends a suggested file type to the limit field, skipping duplicates.
+    func appendFileType(_ ext: String) {
+        let current = HashOptions.parseFileTypes(fileTypesText)
+        guard !current.contains(ext) else { return }
+        fileTypesText = current.isEmpty ? ext : fileTypesText
+            .trimmingCharacters(in: CharacterSet(charactersIn: " ,")) + ", " + ext
+        limitFileTypes = true
     }
 
     // ── Sidecar UI ↔ algorithm coupling ──────────────────────────────────────
 
     /// Keeps the suggested sidecar extension in step with the selected hash
     /// algorithm. The extension is only rewritten while it still holds one of
-    /// the four standard values — a custom extension the user typed is never
+    /// the four standard values; a custom extension the user typed is never
     /// clobbered. (The "{algo}sum format" radio label updates in the view.)
     private func algorithmChanged() {
         let current = sidecarExtension.trimmingCharacters(in: .whitespaces).lowercased()
@@ -157,6 +172,18 @@ final class AppModel: ObservableObject {
             return
         }
 
+        let typeFilter = (!isFile && limitFileTypes)
+            ? HashOptions.parseFileTypes(fileTypesText)
+            : []
+        if !isFile, limitFileTypes, typeFilter.isEmpty {
+            showAlert(title: "No file types",
+                      message: "\"Limit to file types\" is on, but no file types are "
+                        + "listed. Add types (for example: pkg, dmg) or turn the "
+                        + "limit off to scan every file.",
+                      style: .warning)
+            return
+        }
+
         // Sandbox: writing a sidecar next to a single selected file needs
         // access to its parent folder, which selecting the file alone does
         // not grant. Ask once, up front.
@@ -175,12 +202,14 @@ final class AppModel: ObservableObject {
             writeSidecarHashes: writeSidecars,
             sidecarExtension:   sidecarExtension.trimmingCharacters(in: .whitespaces),
             sidecarFormat:      sidecarFormat,
-            allFileTypes:       allFileTypes)
+            recursive:          !isFile && scanRecursively,
+            fileTypeFilter:     typeFilter)
 
         guard let logger = startRun(columnTitle: opts.algorithm.rawValue) else { return }
         logger.logInfo("Target: \(path)  |  Algorithm: \(opts.algorithm.rawValue)  |  "
-            + "AllTypes: \(opts.allFileTypes)  |  Metadata: \(opts.includeMetadata)  |  "
-            + "Sidecar: \(opts.writeSidecarHashes)")
+            + "Recursive: \(opts.recursive)  |  "
+            + "Types: \(opts.fileTypeFilter.isEmpty ? "(all)" : opts.fileTypeFilter.joined(separator: ","))  |  "
+            + "Metadata: \(opts.includeMetadata)  |  Sidecar: \(opts.writeSidecarHashes)")
 
         statusText = "Enumerating files…"
         runTask = Task { await self.performRun(opts, logger: logger) }
@@ -287,7 +316,7 @@ final class AppModel: ObservableObject {
             let errors    = allResults.count - successes
             logger.logSessionEnd(processed: successes, errors: errors)
 
-            statusText = "Done — \(successes.formatted()) hashed, "
+            statusText = "Done: \(successes.formatted()) hashed, "
                 + "\(errors.formatted()) error(s).  Log: \(logger.logPath)"
             runComplete = true
 
@@ -348,14 +377,20 @@ final class AppModel: ObservableObject {
                     + "FileHasher needs permission for the file's folder.")
         }
 
+        let typeFilter = (!isFile && limitFileTypes)
+            ? HashOptions.parseFileTypes(fileTypesText)
+            : []
+
         guard let logger = startRun(columnTitle: "Verification") else { return }
-        logger.logInfo("Verify sidecars — Target: \(path)  |  Extension: \(ext)  |  "
-            + "AllTypes: \(allFileTypes)")
+        logger.logInfo("Verify sidecars | Target: \(path)  |  Extension: \(ext)  |  "
+            + "Recursive: \(!isFile && scanRecursively)  |  "
+            + "Types: \(typeFilter.isEmpty ? "(all)" : typeFilter.joined(separator: ","))")
 
         statusText = "Enumerating sidecars…"
         let verifier = SidecarVerifier(targetPath: path, isFile: isFile,
                                        sidecarExtension: ext,
-                                       allFileTypes: allFileTypes,
+                                       recursive: !isFile && scanRecursively,
+                                       fileTypeFilter: typeFilter,
                                        cancel: cancelFlag)
         runTask = Task { await self.performVerify(verifier, extension: ext, logger: logger) }
     }
@@ -414,7 +449,7 @@ final class AppModel: ObservableObject {
 
             logger.logSessionEnd(processed: summary.ok, errors: summary.failed)
 
-            statusText = "Done — \(summary.ok.formatted()) OK, "
+            statusText = "Done: \(summary.ok.formatted()) OK, "
                 + "\(summary.failed.formatted()) problem(s), "
                 + "\(summary.noSidecar.formatted()) without sidecar.  Log: \(logger.logPath)"
             runComplete = true
@@ -543,7 +578,7 @@ final class AppModel: ObservableObject {
         default:        verdict = SidecarVerifier.statusLabel(v.status)
         }
         if let detail = v.detail {
-            verdict += " — \(detail)"
+            verdict += "; \(detail)"
         }
 
         let severity: ResultRow.Severity
@@ -656,7 +691,7 @@ final class AppModel: ObservableObject {
         if panel.runModal() == .OK, let url = panel.url {
             accessGrants.append(url)
         }
-        // Declining is allowed — the sidecar read/write will surface its own
+        // Declining is allowed; the sidecar read/write will surface its own
         // error row or warning, same as any other access problem.
     }
 
@@ -671,7 +706,7 @@ final class AppModel: ObservableObject {
             NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
             return
         }
-        // File gone since it was hashed — fall back to the folder alone.
+        // File gone since it was hashed; fall back to the folder alone.
         let dir = (path as NSString).deletingLastPathComponent
         var isDir: ObjCBool = false
         if FileManager.default.fileExists(atPath: dir, isDirectory: &isDir), isDir.boolValue {

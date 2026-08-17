@@ -25,7 +25,7 @@ struct ContentView: View {
         GroupBox("Target") {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    TextField("File or folder path — type, browse, or drop here",
+                    TextField("File or folder path: type, browse, or drop here",
                               text: $model.targetPath)
                         .textFieldStyle(.roundedBorder)
                     Button("Browse File…")   { model.browseForFile() }
@@ -33,9 +33,26 @@ struct ContentView: View {
                     Button("Browse Folder…") { model.browseForFolder() }
                         .disabled(model.isRunning)
                 }
-                Toggle("Scan all file types  (default: .exe and .msi only)",
-                       isOn: $model.allFileTypes)
-                    .disabled(!model.allTypesEnabled)
+                Toggle("Include subfolders  (scan the folder recursively)",
+                       isOn: $model.scanRecursively)
+                    .disabled(!model.folderOptionsEnabled)
+                HStack(spacing: 8) {
+                    Toggle("Limit to file types:", isOn: $model.limitFileTypes)
+                    TextField("e.g. pkg, dmg, zip", text: $model.fileTypesText)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 240)
+                        .disabled(!model.limitFileTypes)
+                    Menu("Suggestions") {
+                        ForEach(AppModel.fileTypeSuggestions, id: \.self) { ext in
+                            Button(ext) { model.appendFileType(ext) }
+                        }
+                    }
+                    .frame(width: 130)
+                    Text("Off = every file is scanned")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .disabled(!model.folderOptionsEnabled)
             }
             .padding(4)
         }
@@ -205,7 +222,7 @@ struct ContentView: View {
                 Button {
                     model.openLogFolder()
                 } label: {
-                    Text("Log: \(logPath)  — click to open log folder")
+                    Text("Log: \(logPath)  (click to open log folder)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)

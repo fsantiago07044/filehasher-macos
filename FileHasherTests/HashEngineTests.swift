@@ -79,34 +79,69 @@ final class HashEngineTests: XCTestCase {
             "ABCD *setup.exe *2026-08-09T14:33:05Z *42")
     }
 
-    // ── Enumeration filter ───────────────────────────────────────────────────
+    // ── File-type parsing ────────────────────────────────────────────────────
 
-    func testEnumerationDefaultFilterAndSidecarExclusion() throws {
+    func testParseFileTypes() {
+        XCTAssertEqual(HashOptions.parseFileTypes("pkg, .DMG, zip,, dmg"),
+                       ["pkg", "dmg", "zip"])
+        XCTAssertEqual(HashOptions.parseFileTypes("  "), [])
+        XCTAssertEqual(HashOptions.parseFileTypes("..pkg"), ["pkg"])
+        XCTAssertEqual(HashOptions.parseFileTypes("exe msi"), ["exe", "msi"])
+    }
+
+    // ── Enumeration: defaults, recursion, filter, sidecar exclusion ──────────
+
+    private func enumOptions(recursive: Bool = false, filter: [String] = [],
+                             writeSidecars: Bool = false) -> HashOptions {
+        HashOptions(targetPath: tempDir.path, isFile: false,
+                    algorithm: .sha256, includeMetadata: false,
+                    writeSidecarHashes: writeSidecars, sidecarExtension: ".sha256",
+                    sidecarFormat: .algoSum, recursive: recursive, fileTypeFilter: filter)
+    }
+
+    private func enumerate(_ opts: HashOptions) throws -> Set<String> {
+        let (files, warnings) = try HashWorker(options: opts, cancel: CancelFlag())
+            .enumerateFiles()
+        XCTAssertTrue(warnings.isEmpty)
+        return Set(files.map { ($0 as NSString).lastPathComponent })
+    }
+
+    func testEnumerationDefaultsToAllFilesNonRecursive() throws {
         try makeFile("a.exe", "1")
-        try makeFile("b.msi", "2")
         try makeFile("c.txt", "3")
+        try FileManager.default.createDirectory(
+            at: tempDir.appendingPathComponent("sub"), withIntermediateDirectories: true)
+        try makeFile("sub/nested.pkg", "4")
+
+        // Default: every top-level file, no recursion into sub/.
+        XCTAssertEqual(try enumerate(enumOptions()), ["a.exe", "c.txt"])
+
+        // Recursive: sub/ is included.
+        XCTAssertEqual(try enumerate(enumOptions(recursive: true)),
+                       ["a.exe", "c.txt", "nested.pkg"])
+    }
+
+    func testEnumerationFileTypeFilter() throws {
+        try makeFile("installer.pkg", "1")
+        try makeFile("image.dmg", "2")
+        try makeFile("readme.txt", "3")
+        try FileManager.default.createDirectory(
+            at: tempDir.appendingPathComponent("sub"), withIntermediateDirectories: true)
+        try makeFile("sub/other.pkg", "4")
+
+        XCTAssertEqual(try enumerate(enumOptions(filter: ["pkg", "dmg"])),
+                       ["installer.pkg", "image.dmg"])
+        XCTAssertEqual(try enumerate(enumOptions(recursive: true, filter: ["pkg"])),
+                       ["installer.pkg", "other.pkg"])
+    }
+
+    func testEnumerationSidecarExclusion() throws {
+        try makeFile("a.exe", "1")
         try makeFile("a.exe.sha256", "already-there")
 
-        let opts = HashOptions(targetPath: tempDir.path, isFile: false,
-                               algorithm: .sha256, includeMetadata: false,
-                               writeSidecarHashes: true, sidecarExtension: ".sha256",
-                               sidecarFormat: .algoSum, allFileTypes: false)
-        let worker = HashWorker(options: opts, cancel: CancelFlag())
-        let (files, warnings) = try worker.enumerateFiles()
-
-        XCTAssertTrue(warnings.isEmpty)
-        XCTAssertEqual(Set(files.map { ($0 as NSString).lastPathComponent }),
-                       ["a.exe", "b.msi"])
-
-        let optsAll = HashOptions(targetPath: tempDir.path, isFile: false,
-                                  algorithm: .sha256, includeMetadata: false,
-                                  writeSidecarHashes: false, sidecarExtension: ".sha256",
-                                  sidecarFormat: .algoSum, allFileTypes: true)
-        let (allFiles, _) = try HashWorker(options: optsAll, cancel: CancelFlag())
-            .enumerateFiles()
-        // Sidecars are only excluded while WRITING sidecars — parity with Windows.
-        XCTAssertEqual(Set(allFiles.map { ($0 as NSString).lastPathComponent }),
-                       ["a.exe", "b.msi", "c.txt", "a.exe.sha256"])
+        // Sidecars are excluded only while WRITING sidecars, matching Windows.
+        XCTAssertEqual(try enumerate(enumOptions(writeSidecars: true)), ["a.exe"])
+        XCTAssertEqual(try enumerate(enumOptions()), ["a.exe", "a.exe.sha256"])
     }
 
     // ── End-to-end hash run with sidecar writing ─────────────────────────────
@@ -116,7 +151,7 @@ final class HashEngineTests: XCTestCase {
         let opts = HashOptions(targetPath: path, isFile: true,
                                algorithm: .sha256, includeMetadata: true,
                                writeSidecarHashes: true, sidecarExtension: ".sha256",
-                               sidecarFormat: .algoSum, allFileTypes: false)
+                               sidecarFormat: .algoSum, recursive: false, fileTypeFilter: [])
         let worker = HashWorker(options: opts, cancel: CancelFlag())
         let logger = try Logger()
 
@@ -139,10 +174,11 @@ final class HashEngineTests: XCTestCase {
     // ── Verifier ─────────────────────────────────────────────────────────────
 
     private func verify(target: String, isFile: Bool, ext: String = ".sha256",
-                        allTypes: Bool = false) throws -> [VerifyResult] {
+                        recursive: Bool = false,
+                        filter: [String] = []) throws -> [VerifyResult] {
         let verifier = SidecarVerifier(targetPath: target, isFile: isFile,
-                                       sidecarExtension: ext, allFileTypes: allTypes,
-                                       cancel: CancelFlag())
+                                       sidecarExtension: ext, recursive: recursive,
+                                       fileTypeFilter: filter, cancel: CancelFlag())
         let (items, _) = try verifier.enumerateWork()
         var results: [VerifyResult] = []
         _ = try verifier.verifyAll(items: items, logger: try Logger()) { message in
@@ -223,7 +259,7 @@ final class HashEngineTests: XCTestCase {
     func testVerifyExtendedMetadataNotesDoNotFail() throws {
         let hash = "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD"
         let p = try makeFile("noted.exe", "abc")
-        // Wrong embedded filename, ancient date, wrong size — hash still decides.
+        // Wrong embedded filename, ancient date, wrong size; hash still decides.
         try makeFile("noted.exe.sha256",
                      "\(hash) *other-name.exe *2000-01-01T00:00:00Z *999")
 

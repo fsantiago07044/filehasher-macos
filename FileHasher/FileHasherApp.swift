@@ -15,7 +15,7 @@ struct FileHasherApp: App {
             CommandGroup(replacing: .appInfo) {
                 Button("About FileHasher") { model.showAbout() }
             }
-            // Single-window utility — "New Window" makes no sense here.
+            // Single-window utility; "New Window" makes no sense here.
             CommandGroup(replacing: .newItem) {}
         }
     }
