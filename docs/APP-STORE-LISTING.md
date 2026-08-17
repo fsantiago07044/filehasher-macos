@@ -25,7 +25,8 @@ Primary: **Utilities** · Secondary (optional): **Developer Tools**
 FileHasher computes cryptographic hashes for your files and folders, writes standard sidecar hash files next to them, and verifies everything later, so you can prove a download, an installer, a backup, or an archive hasn't changed since you hashed it.
 
 HASH
-• Hash a single file or an entire folder tree, recursively
+• Hash a single file or a folder of files, with optional subfolder recursion
+• Optionally limit a folder scan to file types you choose (pkg, dmg, zip, and more)
 • Four algorithms: MD5, SHA-1, SHA-256, and SHA-512
 • Drag and drop a file or folder straight onto the window
 • Optional size and last-modified metadata alongside every hash
@@ -88,7 +89,7 @@ FileHasher for macOS shares its lineage with FileHasher for Windows; sidecar fil
 
 | File | Shows |
 | --- | --- |
-| `shot1-hash-1440x900.png` | Recursive folder hash with metadata, completed run |
+| `shot1-hash-1440x900.png` | Folder hash with subfolders included and metadata, completed run |
 | `shot2-verify-ok-1440x900.png` | One-pass verification, all green |
 | `shot3-verify-mismatch-1440x900.png` | Tamper detection; one file flagged MISMATCH |
 
