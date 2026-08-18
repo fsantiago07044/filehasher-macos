@@ -22,6 +22,16 @@ struct HelpTopic: Identifiable, Hashable {
 }
 
 enum HelpContent {
+    /// The marketing version of the running app, read from the bundle so the
+    /// help content (and the support email subject) tracks every update
+    /// automatically.
+    static let appVersion = Bundle.main.object(
+        forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
+
+    /// Support mail link with a pre-filled, version-stamped subject line.
+    static let supportMailto =
+        "mailto:support@fabianasantiago.com?subject=FileHasher-MacOS-\(appVersion)"
+
     static let topics: [HelpTopic] = [
         HelpTopic(id: "start", title: "Getting Started", icon: "play.circle", sections: [
             HelpSection(paragraphs: [
@@ -145,7 +155,7 @@ enum HelpContent {
 
         HelpTopic(id: "support", title: "Support", icon: "questionmark.circle", sections: [
             HelpSection(paragraphs: [
-                "Questions, bug reports, or feature ideas are welcome at **support@fabianasantiago.com**. Including your app version (FileHasher menu, About FileHasher), your macOS version, and what you expected to happen makes fixes faster.",
+                "Questions, bug reports, or feature ideas are welcome at [support@fabianasantiago.com](\(supportMailto)). The link pre-fills the subject with your app version (\(appVersion)); adding your macOS version and what you expected to happen makes fixes faster.",
                 "The support page and privacy policy are also available from the Help menu.",
             ]),
         ]),

@@ -6,6 +6,9 @@
   covering every feature (Getting Started, scan options, algorithms, sidecars,
   verification verdicts, CSV, logs, privacy), replacing the empty system stub.
   Cmd-? opens it; Support Website and Privacy Policy links sit alongside.
+- The support email link in Help pre-fills its subject with the installed
+  app version (FileHasher-MacOS-x.y.z), read from the bundle so it updates
+  itself on every release
 
 ## 1.0.0 (build 2), 2026-08-16
 
