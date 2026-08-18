@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 (in progress)
+
+- Real in-app help: the Help menu now opens a native help window with topics
+  covering every feature (Getting Started, scan options, algorithms, sidecars,
+  verification verdicts, CSV, logs, privacy), replacing the empty system stub.
+  Cmd-? opens it; Support Website and Privacy Policy links sit alongside.
+
 ## 1.0.0 (build 2), 2026-08-16
 
 Folder scanning redesigned for macOS conventions (the Windows app keeps its

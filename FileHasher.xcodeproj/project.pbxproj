@@ -10,6 +10,7 @@
 		0871601E03366A4FA7256A3C /* HashAlgorithmKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6469E08250441199B96114D7 /* HashAlgorithmKind.swift */; };
 		0BAE9B724426FB72A48A2110 /* HashOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717107632C6187D96647092 /* HashOptions.swift */; };
 		2752C3C334EBBDE631441A47 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1504962E68C68D467C8EF6 /* Logger.swift */; };
+		28FF0A5FC5E1AACB466C2E6B /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07EEEC5EC2E9C01C719E567 /* HelpView.swift */; };
 		2C56C844EB5F1F04822184AB /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */; };
 		43F723012A635EF962FC13E4 /* CsvExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B83D82117A971049DBD60E /* CsvExporter.swift */; };
 		5CC4C46C796FD00AC5BB49BF /* FileHasherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */; };
@@ -17,6 +18,7 @@
 		6F0E4C01BC0360DEE60C1DBA /* HashEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */; };
 		A23C909C238FF5D0FD20573C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95E7763A308932291E7FD76A /* Assets.xcassets */; };
 		AB27128F5646D11799177DD9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264274B121942D05B58B5796 /* ContentView.swift */; };
+		D2A6C6EDEB518540515591D5 /* HelpContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */; };
 		E4AC48E79FE550FD71DE0F5D /* HashWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7583868A0F89D0861B2A2F99 /* HashWorker.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +37,7 @@
 		264274B121942D05B58B5796 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		39F9FE59FD909DFB6C535D23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		50B83D82117A971049DBD60E /* CsvExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvExporter.swift; sourceTree = "<group>"; };
+		5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpContent.swift; sourceTree = "<group>"; };
 		6469E08250441199B96114D7 /* HashAlgorithmKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashAlgorithmKind.swift; sourceTree = "<group>"; };
 		70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidecarVerifier.swift; sourceTree = "<group>"; };
 		737B706F943D41C0495FC412 /* FileHasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FileHasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,9 +49,19 @@
 		BB1504962E68C68D467C8EF6 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		D717107632C6187D96647092 /* HashOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashOptions.swift; sourceTree = "<group>"; };
 		E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		F07EEEC5EC2E9C01C719E567 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		1B40FDC14AA9BB8ED9A1EB11 /* Help */ = {
+			isa = PBXGroup;
+			children = (
+				5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */,
+				F07EEEC5EC2E9C01C719E567 /* HelpView.swift */,
+			);
+			path = Help;
+			sourceTree = "<group>";
+		};
 		40FD1A5A98E292C86C0A3140 /* FileHasher */ = {
 			isa = PBXGroup;
 			children = (
@@ -59,6 +72,7 @@
 				1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */,
 				39F9FE59FD909DFB6C535D23 /* Info.plist */,
 				41079FE30CDFCA333E90DC45 /* HashEngine */,
+				1B40FDC14AA9BB8ED9A1EB11 /* Help */,
 			);
 			path = FileHasher;
 			sourceTree = "<group>";
@@ -203,6 +217,8 @@
 				0871601E03366A4FA7256A3C /* HashAlgorithmKind.swift in Sources */,
 				0BAE9B724426FB72A48A2110 /* HashOptions.swift in Sources */,
 				E4AC48E79FE550FD71DE0F5D /* HashWorker.swift in Sources */,
+				D2A6C6EDEB518540515591D5 /* HelpContent.swift in Sources */,
+				28FF0A5FC5E1AACB466C2E6B /* HelpView.swift in Sources */,
 				2752C3C334EBBDE631441A47 /* Logger.swift in Sources */,
 				5FA3D7619B9904704CCD2723 /* SidecarVerifier.swift in Sources */,
 			);
@@ -298,7 +314,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 49KP5XUP9W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -318,7 +334,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -366,7 +382,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 49KP5XUP9W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -380,7 +396,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
