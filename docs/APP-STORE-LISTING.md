@@ -60,9 +60,11 @@ FileHasher for macOS shares its lineage with FileHasher for Windows; sidecar fil
 
 `hash,checksum,sha256,sha512,sha1,md5,verify,integrity,sidecar,digest,csv,audit` *(78 chars; "file" and "FileHasher" are matched from the name automatically; don't waste keyword space on them)*
 
-## What's New (first release)
+## What's New
 
-`Initial release of FileHasher for macOS.`
+1.0.1: `Now a universal app: runs natively on Apple Silicon and Intel Macs. Adds a built-in help guide (Help menu, Cmd-?) covering every feature.`
+
+1.0.0 (shipped): `Initial release of FileHasher for macOS.`
 
 ## URLs
 

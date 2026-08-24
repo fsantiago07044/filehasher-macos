@@ -2,6 +2,9 @@
 
 ## 1.0.1 (in progress)
 
+- Universal binary: FileHasher now runs natively on Apple Silicon and
+  Intel Macs (previously Intel-only, via Rosetta 2 on Apple Silicon)
+
 - Real in-app help: the Help menu now opens a native help window with topics
   covering every feature (Getting Started, scan options, algorithms, sidecars,
   verification verdicts, CSV, logs, privacy), replacing the empty system stub.

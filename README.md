@@ -15,9 +15,8 @@ A utility to hash files and folders, write sidecar hash files, verify them later
 
 ## Requirements
 
-- **Running:** macOS 13 Ventura or later. Current builds are **Intel (x86_64) only**;
-  they run on Apple Silicon via Rosetta 2. (Universal builds are a one-line change in
-  `project.yml` once Apple Silicon test hardware is available.)
+- **Running:** macOS 13 Ventura or later. Builds are **universal** (Apple Silicon
+  and Intel, native on both).
 - **Building:** Xcode 15+ (developed with Xcode 26), plus [XcodeGen](https://github.com/yonaskolb/XcodeGen)
   if you modify the project structure.
 

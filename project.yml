@@ -10,9 +10,10 @@ options:
 
 settings:
   base:
-    # Intel-only for now — the maintainer has no Apple Silicon hardware to
-    # build or test on. Flip to "$(ARCHS_STANDARD)" to go universal later.
-    ARCHS: x86_64
+    # Universal (arm64 + x86_64) since 1.0.1; the arm64 slice is tested
+    # natively on an Apple Silicon machine before each release.
+    ARCHS: "$(ARCHS_STANDARD)"
+    ONLY_ACTIVE_ARCH: NO
     DEVELOPMENT_TEAM: 49KP5XUP9W
     CODE_SIGN_STYLE: Automatic
     SWIFT_VERSION: "5.0"
