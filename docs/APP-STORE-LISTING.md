@@ -49,12 +49,19 @@ EXPORT AND RECORD
 PRIVATE BY DESIGN
 FileHasher collects nothing and sends nothing. There are no analytics, no accounts, and no network connections; everything happens locally, inside the macOS App Sandbox.
 
+FileHasher is a universal app, running natively on both Apple Silicon and Intel Macs.
+
 FileHasher for macOS shares its lineage with FileHasher for Windows; sidecar files and CSV exports made on either platform verify cleanly on the other.
 ```
 
 ## Promotional text (max 170 characters, editable without review)
 
+Current (while 1.0.0 is the live version):
 `Hash files and folders, write standard sidecar checksums, and verify them any time; private by design, with no network access at all.` *(134 chars)*
+
+Swap in AFTER 1.0.1 is released (promo text changes the live listing instantly,
+so don't claim universal before the universal build ships):
+`Now universal: runs natively on Apple Silicon and Intel Macs. Hash, sidecar, and verify your files; private by design, no network access at all.` *(144 chars)*
 
 ## Keywords (max 100 characters)
 
