@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.1, released 2026-08-26 (Mac App Store)
+## 1.0.1, released 2026-08-25 (Mac App Store)
 
 - Universal binary: FileHasher now runs natively on Apple Silicon and
   Intel Macs (previously Intel-only, via Rosetta 2 on Apple Silicon)
