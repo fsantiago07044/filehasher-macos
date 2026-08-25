@@ -1,5 +1,11 @@
 # App Review reply (Guideline 2.1, Information Needed)
 
+NOTE (2026-08-25): item 2 below was updated for the universal 1.0.1 era.
+The ASC App Review Information -> Notes field still holds the older
+Intel-only wording from the 1.0.0 submission; it is locked while 1.0.1 is
+In Review. Refresh that field with the current items 2-7 at the next
+opportunity (after approval, or during any resubmission).
+
 Paste the reply below into the Resolution Center thread, attach
 `filehasher-review-demo.mov`, and also copy items 2 through 7 into
 App Review Information -> Notes for future submissions.
@@ -27,13 +33,16 @@ permission interaction is the standard macOS file-selection dialog
 the sandboxed app may read.
 
 2. DEVICES AND OPERATING SYSTEMS TESTED
-Mac mini (2018), Model Identifier Macmini8,1, 6-core Intel Core i7,
-running macOS Sequoia 15.7.9. This is the newest macOS available for
-Intel hardware, which the app targets (the binary is x86_64 and runs on
-Apple Silicon via Rosetta 2; minimum system version is macOS 13). The
-hashing engine is additionally covered by an automated test suite (16
-unit tests, including known hash vectors for all four algorithms) that
-runs on the same platform.
+The app is a universal binary (arm64 + x86_64) and is tested natively on
+both architectures before each release:
+- Apple Silicon: Mac (M-series) running macOS 26.6.2
+- Intel: Mac mini (2018), Model Identifier Macmini8,1, 6-core Intel
+  Core i7, running macOS Sequoia 15.7.9 (the newest macOS available for
+  Intel hardware)
+Minimum system version is macOS 13. The hashing engine is additionally
+covered by an automated test suite (16 unit tests, including known hash
+vectors for all four algorithms) that runs natively on both
+architectures.
 
 3. PURPOSE AND TARGET AUDIENCE
 FileHasher computes cryptographic hashes (MD5, SHA-1, SHA-256, SHA-512)
