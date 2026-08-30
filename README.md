@@ -2,9 +2,9 @@
 
 A utility to hash files and folders, write sidecar hash files, verify them later, and export results to CSV.
 
-> **Derived from [FileHasher for Windows](https://gitlab.gjb-online.com/root/filehasher).**
+> **Derived from [FileHasher for Windows](https://github.com/fsantiago07044/filehasher).**
 > This repository is a native macOS (SwiftUI) port of the Windows WinForms application and is
-> maintained as a fork-linked sibling project. The app itself is named **FileHasher** on both
+> maintained as a sibling project. The app itself is named **FileHasher** on both
 > platforms. Output behavior (sidecar formats, verification verdicts, CSV layout, log format)
 > is kept deliberately identical so sidecars and CSVs produced on one platform verify and
 > compare cleanly on the other. Folder-scan defaults differ by design: the Windows app's
@@ -100,7 +100,7 @@ xcodebuild -scheme FileHasher test
 
 ## Acknowledgements
 
-Direct port of [FileHasher for Windows](https://gitlab.gjb-online.com/root/filehasher),
+Direct port of [FileHasher for Windows](https://github.com/fsantiago07044/filehasher),
 which grew out of an original PowerShell hashing script.
 
 ## License
