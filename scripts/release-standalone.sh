@@ -85,7 +85,7 @@ codesign -f -s "$IDENTITY" -o runtime "$FW"
 codesign -f -s "$IDENTITY" -o runtime \
   --entitlements "$REPO_ROOT/FileHasher/FileHasher-Standalone.entitlements" "$APP"
 codesign --verify --strict --deep "$APP" && echo "    deep signature verified"
-codesign -dv "$APP" 2>&1 | grep "Authority=Developer ID Application" | head -1
+codesign -dvv "$APP" 2>&1 | grep "Authority=Developer ID Application" | head -1
 
 echo "==> Verifying universal binary and Sparkle presence"
 lipo -archs "$APP/Contents/MacOS/FileHasher" | grep -q "x86_64 arm64" || { echo "not universal" >&2; exit 1; }
