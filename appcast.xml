@@ -10,5 +10,18 @@
     <link>https://fabianasantiago.com/filehasher/</link>
     <description>Updates for the FileHasher Standalone edition.</description>
     <language>en</language>
+    <item>
+      <title>Version 1.0.2</title>
+      <pubDate>Mon, 31 Aug 2026 23:16:22 -0400</pubDate>
+      <sparkle:version>4</sparkle:version>
+      <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+      <link>https://fabianasantiago.com/filehasher/</link>
+      <enclosure
+        url="https://github.com/fsantiago07044/filehasher-macos/releases/download/v1.0.2/FileHasher-1.0.2.zip"
+        length="2723558"
+        type="application/octet-stream"
+        sparkle:edSignature="I8JsW1bF+3b4IrumJRcJknzOqrjYPe/VU6tSMF+Hr/tkQ2SA+eYDXFBUQ/8R6bgwN0KS9PVw/cH8GBJ/q8sSDg==" />
+    </item>
   </channel>
 </rss>
