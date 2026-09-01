@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.2 (in progress)
+## 1.0.2, released 2026-08-31 (Standalone edition debut, GitHub; Mac App Store edition unchanged at 1.0.1)
 
 - New Standalone edition, distributed outside the Mac App Store: Developer ID
   signed, notarized, universal, and self-updating via Sparkle (with user
