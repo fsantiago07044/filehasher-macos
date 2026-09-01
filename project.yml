@@ -17,9 +17,18 @@ settings:
     DEVELOPMENT_TEAM: 49KP5XUP9W
     CODE_SIGN_STYLE: Automatic
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: 1.0.1
-    CURRENT_PROJECT_VERSION: 3
+    MARKETING_VERSION: 1.0.2
+    CURRENT_PROJECT_VERSION: 4
 
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.9.6
+
+# Two channels, one codebase. The App Store target carries no Sparkle code at
+# all (self-updating is prohibited there); the Standalone target embeds
+# Sparkle and gains the network entitlement its update checks require.
+# CHANNEL_* compilation conditions drive the few in-app differences.
 targets:
   FileHasher:
     type: application
@@ -34,6 +43,11 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         COMBINE_HIDPI_IMAGES: YES
+      configs:
+        debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG CHANNEL_APPSTORE
+        release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: CHANNEL_APPSTORE
     info:
       path: FileHasher/Info.plist
       properties:
@@ -46,6 +60,43 @@ targets:
         # The app performs hashing only — no encryption — so it qualifies as
         # exempt for App Store export compliance.
         ITSAppUsesNonExemptEncryption: false
+
+  FileHasher-Standalone:
+    type: application
+    platform: macOS
+    sources:
+      - FileHasher
+    dependencies:
+      - package: Sparkle
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fabianasantiago.FileHasher
+        PRODUCT_NAME: FileHasher
+        CODE_SIGN_ENTITLEMENTS: FileHasher/FileHasher-Standalone.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        # Both channels produce FileHasher.app; keep their build products in
+        # separate directories so scheme switches can never mix bundles.
+        CONFIGURATION_BUILD_DIR: $(BUILD_DIR)/$(CONFIGURATION)-standalone
+      configs:
+        debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG CHANNEL_STANDALONE
+        release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: CHANNEL_STANDALONE
+    info:
+      path: FileHasher/Info-Standalone.plist
+      properties:
+        CFBundleDisplayName: FileHasher
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "Copyright © 2026 Fabian Santiago"
+        ITSAppUsesNonExemptEncryption: false
+        SUFeedURL: https://raw.githubusercontent.com/fsantiago07044/filehasher-macos/main/appcast.xml
+        SUPublicEDKey: VX30rL/vaYFxw+/FGMNku36zfwN2v1gSR07v/8xDoZM=
+        SUEnableInstallerLauncherService: true
 
   FileHasherTests:
     type: bundle.unit-test
@@ -71,5 +122,14 @@ schemes:
       config: Debug
       targets:
         - FileHasherTests
+    archive:
+      config: Release
+
+  FileHasher-Standalone:
+    build:
+      targets:
+        FileHasher-Standalone: all
+    run:
+      config: Debug
     archive:
       config: Release

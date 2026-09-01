@@ -754,7 +754,7 @@ final class AppModel: ObservableObject {
 
         let alert = NSAlert()
         alert.messageText = "FileHasher"
-        alert.informativeText = "Version \(version)\n\n"
+        alert.informativeText = "Version \(version) (\(HelpContent.channelName))\n\n"
             + "A file and folder hashing utility for macOS,\n"
             + "derived from FileHasher for Windows.\n\n"
             + "Author: Fabian Santiago\n"

@@ -13,6 +13,21 @@ A utility to hash files and folders, write sidecar hash files, verify them later
 
 ---
 
+## Editions
+
+FileHasher for macOS ships in two editions built from this one codebase:
+
+- **Mac App Store edition**: on the
+  [App Store](https://apps.apple.com/us/app/filehasher-checksum-utility/id6802073927),
+  updated through the store. Makes no network connections at all.
+- **Standalone edition**: notarized direct download from
+  [GitHub Releases](https://github.com/fsantiago07044/filehasher-macos/releases),
+  self-updating via [Sparkle](https://sparkle-project.org) (with your consent;
+  its update checks against GitHub are its only network activity).
+
+Feature behavior is identical; About and Help name the edition you're running.
+See [docs/RELEASING.md](docs/RELEASING.md) for how releases are produced.
+
 ## Requirements
 
 - **Running:** macOS 13 Ventura or later. Builds are **universal** (Apple Silicon

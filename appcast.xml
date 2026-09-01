@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sparkle update feed for the FileHasher Standalone edition.
+     Served to clients via:
+     https://raw.githubusercontent.com/fsantiago07044/filehasher-macos/main/appcast.xml
+     Edit on GitLab (source of truth); the push mirror publishes it to GitHub.
+     Each release's <item> is emitted by scripts/release-standalone.sh. -->
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>FileHasher for macOS</title>
+    <link>https://fabianasantiago.com/filehasher/</link>
+    <description>Updates for the FileHasher Standalone edition.</description>
+    <language>en</language>
+  </channel>
+</rss>

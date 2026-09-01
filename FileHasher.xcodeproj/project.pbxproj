@@ -7,19 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		047B428A79907F2646197E4C /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 4E46A7B6DF428B8D4E10DBF3 /* Sparkle */; };
 		0871601E03366A4FA7256A3C /* HashAlgorithmKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6469E08250441199B96114D7 /* HashAlgorithmKind.swift */; };
 		0BAE9B724426FB72A48A2110 /* HashOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717107632C6187D96647092 /* HashOptions.swift */; };
 		2752C3C334EBBDE631441A47 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1504962E68C68D467C8EF6 /* Logger.swift */; };
 		28FF0A5FC5E1AACB466C2E6B /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07EEEC5EC2E9C01C719E567 /* HelpView.swift */; };
+		2AB835633EE40B66870C6039 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95E7763A308932291E7FD76A /* Assets.xcassets */; };
 		2C56C844EB5F1F04822184AB /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */; };
+		3BB767A9F6BB2EB8C4993DCD /* HashWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7583868A0F89D0861B2A2F99 /* HashWorker.swift */; };
 		43F723012A635EF962FC13E4 /* CsvExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B83D82117A971049DBD60E /* CsvExporter.swift */; };
+		446A328DFC7927AE5AEC194E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264274B121942D05B58B5796 /* ContentView.swift */; };
+		47862DF0C3C526BA5B4F27D2 /* HashOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717107632C6187D96647092 /* HashOptions.swift */; };
+		559F2A5EA0FAF1FCE266E845 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07EEEC5EC2E9C01C719E567 /* HelpView.swift */; };
 		5CC4C46C796FD00AC5BB49BF /* FileHasherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */; };
 		5FA3D7619B9904704CCD2723 /* SidecarVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */; };
+		62E4B0733AB0010D6D2A0DC7 /* HelpContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */; };
 		6F0E4C01BC0360DEE60C1DBA /* HashEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */; };
+		83AF209BC185596280591E78 /* FileHasherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */; };
 		A23C909C238FF5D0FD20573C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95E7763A308932291E7FD76A /* Assets.xcassets */; };
+		A571CD8BCB52C66E300FD1AE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */; };
 		AB27128F5646D11799177DD9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264274B121942D05B58B5796 /* ContentView.swift */; };
+		D1684AAA9DB22BDCA508FB3C /* Info-Standalone.plist in Resources */ = {isa = PBXBuildFile; fileRef = 28BC5C1E9B5B98E718E2BB66 /* Info-Standalone.plist */; };
 		D2A6C6EDEB518540515591D5 /* HelpContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */; };
+		D92659359D9EFBFC1DDACCA0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 39F9FE59FD909DFB6C535D23 /* Info.plist */; };
 		E4AC48E79FE550FD71DE0F5D /* HashWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7583868A0F89D0861B2A2F99 /* HashWorker.swift */; };
+		ED733809A2C1C557EF685220 /* HashAlgorithmKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6469E08250441199B96114D7 /* HashAlgorithmKind.swift */; };
+		F42F4D4879CEC3958623BEC6 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1504962E68C68D467C8EF6 /* Logger.swift */; };
+		F5CD10A327FE35711066FC1C /* SidecarVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */; };
+		F97583D263AC6393C9C01825 /* CsvExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B83D82117A971049DBD60E /* CsvExporter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +50,9 @@
 /* Begin PBXFileReference section */
 		1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHasherApp.swift; sourceTree = "<group>"; };
 		264274B121942D05B58B5796 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		28BC5C1E9B5B98E718E2BB66 /* Info-Standalone.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-Standalone.plist"; sourceTree = "<group>"; };
 		39F9FE59FD909DFB6C535D23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3A6CEDF65BFA40EBF24F9281 /* FileHasher-Standalone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FileHasher-Standalone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		50B83D82117A971049DBD60E /* CsvExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvExporter.swift; sourceTree = "<group>"; };
 		5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpContent.swift; sourceTree = "<group>"; };
 		6469E08250441199B96114D7 /* HashAlgorithmKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashAlgorithmKind.swift; sourceTree = "<group>"; };
@@ -46,11 +63,23 @@
 		95E7763A308932291E7FD76A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashEngineTests.swift; sourceTree = "<group>"; };
 		A17B92C1E250AFD9CE3354E0 /* FileHasher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileHasher.entitlements; sourceTree = "<group>"; };
+		A99FA05D85EBCF2A19658F06 /* FileHasher-Standalone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "FileHasher-Standalone.entitlements"; sourceTree = "<group>"; };
 		BB1504962E68C68D467C8EF6 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		D717107632C6187D96647092 /* HashOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashOptions.swift; sourceTree = "<group>"; };
 		E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		F07EEEC5EC2E9C01C719E567 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E6F4210CF57411B43D395FEF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				047B428A79907F2646197E4C /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		1B40FDC14AA9BB8ED9A1EB11 /* Help */ = {
@@ -68,8 +97,10 @@
 				E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */,
 				95E7763A308932291E7FD76A /* Assets.xcassets */,
 				264274B121942D05B58B5796 /* ContentView.swift */,
+				A99FA05D85EBCF2A19658F06 /* FileHasher-Standalone.entitlements */,
 				A17B92C1E250AFD9CE3354E0 /* FileHasher.entitlements */,
 				1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */,
+				28BC5C1E9B5B98E718E2BB66 /* Info-Standalone.plist */,
 				39F9FE59FD909DFB6C535D23 /* Info.plist */,
 				41079FE30CDFCA333E90DC45 /* HashEngine */,
 				1B40FDC14AA9BB8ED9A1EB11 /* Help */,
@@ -102,6 +133,7 @@
 		ACF123B6BE0EB94FB15197EF /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				3A6CEDF65BFA40EBF24F9281 /* FileHasher-Standalone.app */,
 				737B706F943D41C0495FC412 /* FileHasher.app */,
 				744E817FDA542C967458C619 /* FileHasherTests.xctest */,
 			);
@@ -137,6 +169,26 @@
 			productReference = 737B706F943D41C0495FC412 /* FileHasher.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C0CBFD7A15094944487E93D2 /* FileHasher-Standalone */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F18C22C2322C545C7CBE5E71 /* Build configuration list for PBXNativeTarget "FileHasher-Standalone" */;
+			buildPhases = (
+				06BA424ADBC5B9E477865A5C /* Sources */,
+				4C2BCD4B75736115D6F809A3 /* Resources */,
+				E6F4210CF57411B43D395FEF /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "FileHasher-Standalone";
+			packageProductDependencies = (
+				4E46A7B6DF428B8D4E10DBF3 /* Sparkle */,
+			);
+			productName = "FileHasher-Standalone";
+			productReference = 3A6CEDF65BFA40EBF24F9281 /* FileHasher-Standalone.app */;
+			productType = "com.apple.product-type.application";
+		};
 		F9262124517307652FFAD68A /* FileHasherTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8D9A35C8AAB4F7F9DA88D869 /* Build configuration list for PBXNativeTarget "FileHasherTests" */;
@@ -168,6 +220,10 @@
 						DevelopmentTeam = 49KP5XUP9W;
 						ProvisioningStyle = Automatic;
 					};
+					C0CBFD7A15094944487E93D2 = {
+						DevelopmentTeam = 49KP5XUP9W;
+						ProvisioningStyle = Automatic;
+					};
 					F9262124517307652FFAD68A = {
 						DevelopmentTeam = 49KP5XUP9W;
 						ProvisioningStyle = Automatic;
@@ -183,29 +239,61 @@
 			);
 			mainGroup = 65545DE4B9FA1C7A69F264FB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D2E80BBDD18436448D14B14F /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ACF123B6BE0EB94FB15197EF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				51B46D621468F27B6E2236F9 /* FileHasher */,
+				C0CBFD7A15094944487E93D2 /* FileHasher-Standalone */,
 				F9262124517307652FFAD68A /* FileHasherTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4C2BCD4B75736115D6F809A3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2AB835633EE40B66870C6039 /* Assets.xcassets in Resources */,
+				D92659359D9EFBFC1DDACCA0 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D534A6BF34D52B121F49E2A8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A23C909C238FF5D0FD20573C /* Assets.xcassets in Resources */,
+				D1684AAA9DB22BDCA508FB3C /* Info-Standalone.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		06BA424ADBC5B9E477865A5C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A571CD8BCB52C66E300FD1AE /* AppModel.swift in Sources */,
+				446A328DFC7927AE5AEC194E /* ContentView.swift in Sources */,
+				F97583D263AC6393C9C01825 /* CsvExporter.swift in Sources */,
+				83AF209BC185596280591E78 /* FileHasherApp.swift in Sources */,
+				ED733809A2C1C557EF685220 /* HashAlgorithmKind.swift in Sources */,
+				47862DF0C3C526BA5B4F27D2 /* HashOptions.swift in Sources */,
+				3BB767A9F6BB2EB8C4993DCD /* HashWorker.swift in Sources */,
+				62E4B0733AB0010D6D2A0DC7 /* HelpContent.swift in Sources */,
+				559F2A5EA0FAF1FCE266E845 /* HelpView.swift in Sources */,
+				F42F4D4879CEC3958623BEC6 /* Logger.swift in Sources */,
+				F5CD10A327FE35711066FC1C /* SidecarVerifier.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		285935E42B81DD6BE95238A1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -275,8 +363,29 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasher;
 				PRODUCT_NAME = FileHasher;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG CHANNEL_APPSTORE";
 			};
 			name = Debug;
+		};
+		38C97F6BBA0AF454CD1EB26D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "FileHasher/FileHasher-Standalone.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)-standalone";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "FileHasher/Info-Standalone.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasher;
+				PRODUCT_NAME = FileHasher;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = CHANNEL_STANDALONE;
+			};
+			name = Release;
 		};
 		5348D1AFCF37D960CBD79412 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -314,7 +423,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 49KP5XUP9W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -334,7 +443,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -382,7 +491,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 49KP5XUP9W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -396,7 +505,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -425,6 +534,26 @@
 			};
 			name = Debug;
 		};
+		663DC171562142862C584DD4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "FileHasher/FileHasher-Standalone.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)-standalone";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "FileHasher/Info-Standalone.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasher;
+				PRODUCT_NAME = FileHasher;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG CHANNEL_STANDALONE";
+			};
+			name = Debug;
+		};
 		F4282522B2404E9A18B4314F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -440,6 +569,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fabianasantiago.FileHasher;
 				PRODUCT_NAME = FileHasher;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = CHANNEL_APPSTORE;
 			};
 			name = Release;
 		};
@@ -473,7 +603,35 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		F18C22C2322C545C7CBE5E71 /* Build configuration list for PBXNativeTarget "FileHasher-Standalone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				663DC171562142862C584DD4 /* Debug */,
+				38C97F6BBA0AF454CD1EB26D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D2E80BBDD18436448D14B14F /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4E46A7B6DF428B8D4E10DBF3 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2E80BBDD18436448D14B14F /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6D3321AA06294195BF1B9DFB /* Project object */;
 }

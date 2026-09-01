@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.2 (in progress)
+
+- New Standalone edition, distributed outside the Mac App Store: Developer ID
+  signed, notarized, universal, and self-updating via Sparkle (with user
+  consent; updates are fetched from GitHub releases). The App Store edition
+  is unchanged and contains no update machinery
+- About dialog, help Support topic, and the support email subject now name
+  the edition (Mac App Store or Standalone)
+- Standalone privacy note: the one network activity is the update check;
+  the help window's Privacy topic explains it per edition
+
 ## 1.0.1, released 2026-08-25 (Mac App Store)
 
 - Universal binary: FileHasher now runs natively on Apple Silicon and

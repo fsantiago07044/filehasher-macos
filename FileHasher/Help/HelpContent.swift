@@ -28,9 +28,37 @@ enum HelpContent {
     static let appVersion = Bundle.main.object(
         forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
 
-    /// Support mail link with a pre-filled, version-stamped subject line.
+#if CHANNEL_STANDALONE
+    /// Which distribution this build came from; surfaces in About, the help
+    /// Support topic, and the support email subject.
+    static let channelName = "Standalone edition"
+    static let channelSlug = "-standalone"
+#else
+    static let channelName = "Mac App Store edition"
+    static let channelSlug = ""
+#endif
+
+    /// Support mail link with a pre-filled, version- and channel-stamped subject.
     static let supportMailto =
-        "mailto:support@fabianasantiago.com?subject=FileHasher-MacOS-\(appVersion)"
+        "mailto:support@fabianasantiago.com?subject=FileHasher-MacOS-\(appVersion)\(channelSlug)"
+
+    /// Privacy topic copy differs by channel: the Standalone edition's Sparkle
+    /// update checks are its one network activity, and the help must say so.
+    /// (#if cannot wrap array-literal elements, hence whole-array selection.)
+    private static let sandboxParagraph =
+        "The app runs inside the macOS App Sandbox, so it can only access files and folders you explicitly select or drag in. The one extra prompt you may see, a folder picker when writing or verifying a sidecar for a single selected file, exists because the sandbox scopes access to exactly what you chose."
+#if CHANNEL_STANDALONE
+    private static let privacyParagraphs = [
+        "FileHasher collects nothing and sends nothing about you or your files. It has no analytics and no accounts; hashing happens entirely on your Mac.",
+        "This Standalone edition makes exactly one kind of network connection: with your consent, it contacts GitHub to check for app updates and downloads them when you approve. No personal data rides along, and update checks can be declined or turned off at any time. The Mac App Store edition makes no network connections at all.",
+        sandboxParagraph,
+    ]
+#else
+    private static let privacyParagraphs = [
+        "FileHasher collects nothing and sends nothing. It has no analytics, no accounts, and it makes no network connections; everything happens locally on your Mac.",
+        sandboxParagraph,
+    ]
+#endif
 
     static let topics: [HelpTopic] = [
         HelpTopic(id: "start", title: "Getting Started", icon: "play.circle", sections: [
@@ -147,15 +175,13 @@ enum HelpContent {
         ]),
 
         HelpTopic(id: "privacy", title: "Privacy & Permissions", icon: "lock.shield", sections: [
-            HelpSection(paragraphs: [
-                "FileHasher collects nothing and sends nothing. It has no analytics, no accounts, and it makes no network connections; everything happens locally on your Mac.",
-                "The app runs inside the macOS App Sandbox, so it can only access files and folders you explicitly select or drag in. The one extra prompt you may see, a folder picker when writing or verifying a sidecar for a single selected file, exists because the sandbox scopes access to exactly what you chose.",
-            ]),
+            HelpSection(paragraphs: privacyParagraphs),
         ]),
 
         HelpTopic(id: "support", title: "Support", icon: "questionmark.circle", sections: [
             HelpSection(paragraphs: [
-                "Questions, bug reports, or feature ideas are welcome at [support@fabianasantiago.com](\(supportMailto)). The link pre-fills the subject with your app version (\(appVersion)); adding your macOS version and what you expected to happen makes fixes faster.",
+                "You are running the \(channelName), version \(appVersion).",
+                "Questions, bug reports, or feature ideas are welcome at [support@fabianasantiago.com](\(supportMailto)). The link pre-fills the subject with your app version and edition; adding your macOS version and what you expected to happen makes fixes faster.",
                 "The support page and privacy policy are also available from the Help menu.",
             ]),
         ]),

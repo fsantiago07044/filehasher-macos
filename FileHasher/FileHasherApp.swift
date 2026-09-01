@@ -1,9 +1,19 @@
 import SwiftUI
+#if CHANNEL_STANDALONE
+import Sparkle
+#endif
 
 @main
 struct FileHasherApp: App {
     @StateObject private var model = AppModel()
     @Environment(\.openWindow) private var openWindow
+
+#if CHANNEL_STANDALONE
+    // Sparkle drives updates in the standalone edition only. The App Store
+    // edition contains no Sparkle code (self-updating is prohibited there).
+    private let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+#endif
 
     var body: some Scene {
         Window("FileHasher", id: "main") {
@@ -15,6 +25,12 @@ struct FileHasherApp: App {
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button("About FileHasher") { model.showAbout() }
+#if CHANNEL_STANDALONE
+                Divider()
+                Button("Check for Updates…") {
+                    updaterController.updater.checkForUpdates()
+                }
+#endif
             }
             // Single-window utility; "New Window" makes no sense here.
             CommandGroup(replacing: .newItem) {}

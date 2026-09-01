@@ -6,3 +6,10 @@ build/
 
 # macOS
 .DS_Store
+
+# Never commit signing material
+*.p8
+AuthKey_*
+*sparkle*priv*
+*.key
+release-work/
