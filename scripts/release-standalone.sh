@@ -54,38 +54,38 @@ fi
 
 rm -rf "$WORK" && mkdir -p "$WORK"
 
-echo "==> Archiving (Release, universal, hermetic DerivedData)"
-# A dedicated DerivedData per release avoids the stale-SPM-signature quirk
-# ("Sparkle.xcframework-macos.signature ... already exists" -> malformed
-# archive) and makes every release build from a clean slate.
-xcodebuild -scheme FileHasher-Standalone -configuration Release archive \
-  -archivePath "$ARCHIVE" -derivedDataPath "$WORK/DerivedData" \
-  -allowProvisioningUpdates > "$WORK/archive.log" 2>&1 || {
-    tail -20 "$WORK/archive.log" >&2; echo "archive failed" >&2; exit 1; }
-grep -q "\*\* ARCHIVE SUCCEEDED \*\*" "$WORK/archive.log" || {
-    tail -20 "$WORK/archive.log" >&2; echo "archive did not succeed" >&2; exit 1; }
-[ -f "$ARCHIVE/Info.plist" ] || { echo "archive malformed" >&2; exit 1; }
+echo "==> Building (Release, universal, hermetic DerivedData)"
+# We deliberately do NOT use xcodebuild archive/-exportArchive here: archiving
+# an app that embeds a signed binary xcframework (Sparkle via SPM) trips an
+# Xcode bug ("Sparkle.xcframework-macos.signature couldn't be copied to
+# Signatures ... File exists") even with pristine DerivedData. A plain Release
+# build plus manual inside-out Developer ID signing is the documented Sparkle
+# distribution path and is fully deterministic.
+xcodebuild -scheme FileHasher-Standalone -configuration Release build \
+  -derivedDataPath "$WORK/DerivedData" > "$WORK/build.log" 2>&1 || {
+    tail -20 "$WORK/build.log" >&2; echo "build failed" >&2; exit 1; }
+grep -q "BUILD SUCCEEDED" "$WORK/build.log" || {
+    tail -20 "$WORK/build.log" >&2; echo "build did not succeed" >&2; exit 1; }
 
-echo "==> Exporting with Developer ID signing"
-cat > "$WORK/export-options.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>method</key>
-	<string>developer-id</string>
-	<key>teamID</key>
-	<string>49KP5XUP9W</string>
-</dict>
-</plist>
-PLIST
-xcodebuild -exportArchive -archivePath "$ARCHIVE" \
-  -exportOptionsPlist "$WORK/export-options.plist" \
-  -exportPath "$EXPORT_DIR" -allowProvisioningUpdates > "$WORK/export.log" 2>&1 || {
-    tail -20 "$WORK/export.log" >&2; echo "export failed" >&2; exit 1; }
-tail -3 "$WORK/export.log" 
+APP_SRC="$WORK/DerivedData/Build/Products/Release-standalone/FileHasher.app"
+[ -d "$APP_SRC" ] || { echo "built app not found at $APP_SRC" >&2; exit 1; }
+mkdir -p "$EXPORT_DIR"
 APP="$EXPORT_DIR/FileHasher.app"
-[ -d "$APP" ] || { echo "export failed" >&2; exit 1; }
+rm -rf "$APP" && ditto "$APP_SRC" "$APP"
+xattr -cr "$APP"
+
+echo "==> Signing with Developer ID (inside-out)"
+IDENTITY="Developer ID Application: Fabian Santiago (49KP5XUP9W)"
+FW="$APP/Contents/Frameworks/Sparkle.framework"
+codesign -f -s "$IDENTITY" -o runtime --preserve-metadata=entitlements "$FW/Versions/B/XPCServices/Downloader.xpc"
+codesign -f -s "$IDENTITY" -o runtime --preserve-metadata=entitlements "$FW/Versions/B/XPCServices/Installer.xpc"
+[ -f "$FW/Versions/B/Autoupdate" ] && codesign -f -s "$IDENTITY" -o runtime "$FW/Versions/B/Autoupdate"
+[ -d "$FW/Versions/B/Updater.app" ] && codesign -f -s "$IDENTITY" -o runtime "$FW/Versions/B/Updater.app"
+codesign -f -s "$IDENTITY" -o runtime "$FW"
+codesign -f -s "$IDENTITY" -o runtime \
+  --entitlements "$REPO_ROOT/FileHasher/FileHasher-Standalone.entitlements" "$APP"
+codesign --verify --strict --deep "$APP" && echo "    deep signature verified"
+codesign -dv "$APP" 2>&1 | grep "Authority=Developer ID Application" | head -1
 
 echo "==> Verifying universal binary and Sparkle presence"
 lipo -archs "$APP/Contents/MacOS/FileHasher" | grep -q "x86_64 arm64" || { echo "not universal" >&2; exit 1; }
