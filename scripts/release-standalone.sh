@@ -32,12 +32,16 @@ export DEVELOPER_DIR
 VERSION=$(awk '/MARKETING_VERSION:/ {print $2; exit}' project.yml)
 BUILD=$(awk '/CURRENT_PROJECT_VERSION:/ {print $2; exit}' project.yml)
 TAG="v${VERSION}"
-WORK="$REPO_ROOT/release-work"
+# Work dir must live OUTSIDE ~/Documents: that tree is file-provider synced,
+# and the sync stamps every written file with FinderInfo xattrs, which
+# codesign rejects ("resource fork ... detritus not allowed").
+WORK="${TMPDIR:-/tmp}/filehasher-release-work"
 ARCHIVE="$WORK/FileHasher-Standalone.xcarchive"
 EXPORT_DIR="$WORK/export"
 ZIP="$WORK/FileHasher-${VERSION}.zip"
 
 echo "==> Releasing FileHasher Standalone ${VERSION} (build ${BUILD}), tag ${TAG}"
+echo "==> Work dir: $WORK"
 
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "ERROR: working tree not clean; commit or stash first." >&2
@@ -86,6 +90,9 @@ APP="$EXPORT_DIR/FileHasher.app"
 echo "==> Verifying universal binary and Sparkle presence"
 lipo -archs "$APP/Contents/MacOS/FileHasher" | grep -q "x86_64 arm64" || { echo "not universal" >&2; exit 1; }
 [ -d "$APP/Contents/Frameworks/Sparkle.framework" ] || { echo "Sparkle missing from bundle" >&2; exit 1; }
+
+# Belt and braces: strip any extended attributes before signing artifacts move on
+xattr -cr "$APP"
 
 echo "==> Notarizing (this waits for Apple)"
 ditto -c -k --keepParent "$APP" "$WORK/notarize-upload.zip"
