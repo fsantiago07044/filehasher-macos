@@ -50,10 +50,17 @@ fi
 
 rm -rf "$WORK" && mkdir -p "$WORK"
 
-echo "==> Archiving (Release, universal)"
+echo "==> Archiving (Release, universal, hermetic DerivedData)"
+# A dedicated DerivedData per release avoids the stale-SPM-signature quirk
+# ("Sparkle.xcframework-macos.signature ... already exists" -> malformed
+# archive) and makes every release build from a clean slate.
 xcodebuild -scheme FileHasher-Standalone -configuration Release archive \
-  -archivePath "$ARCHIVE" -allowProvisioningUpdates | grep -E "error|ARCHIVE" || true
-[ -d "$ARCHIVE" ] || { echo "archive failed" >&2; exit 1; }
+  -archivePath "$ARCHIVE" -derivedDataPath "$WORK/DerivedData" \
+  -allowProvisioningUpdates > "$WORK/archive.log" 2>&1 || {
+    tail -20 "$WORK/archive.log" >&2; echo "archive failed" >&2; exit 1; }
+grep -q "\*\* ARCHIVE SUCCEEDED \*\*" "$WORK/archive.log" || {
+    tail -20 "$WORK/archive.log" >&2; echo "archive did not succeed" >&2; exit 1; }
+[ -f "$ARCHIVE/Info.plist" ] || { echo "archive malformed" >&2; exit 1; }
 
 echo "==> Exporting with Developer ID signing"
 cat > "$WORK/export-options.plist" <<PLIST
@@ -70,7 +77,9 @@ cat > "$WORK/export-options.plist" <<PLIST
 PLIST
 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
   -exportOptionsPlist "$WORK/export-options.plist" \
-  -exportPath "$EXPORT_DIR" -allowProvisioningUpdates | tail -3
+  -exportPath "$EXPORT_DIR" -allowProvisioningUpdates > "$WORK/export.log" 2>&1 || {
+    tail -20 "$WORK/export.log" >&2; echo "export failed" >&2; exit 1; }
+tail -3 "$WORK/export.log" 
 APP="$EXPORT_DIR/FileHasher.app"
 [ -d "$APP" ] || { echo "export failed" >&2; exit 1; }
 
