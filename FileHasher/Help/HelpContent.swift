@@ -86,8 +86,9 @@ enum HelpContent {
             HelpSection(paragraphs: [
                 "When the target is a folder, every file at the folder's top level is hashed by default. Two options refine that:",
             ]),
-            HelpSection(heading: "Include subfolders", paragraphs: [
-                "Check this to scan the folder recursively, descending into every subfolder. It is off by default.",
+            HelpSection(heading: "Subfolders", paragraphs: [
+                "Chooses how far below the selected folder the scan reaches. **This folder only** is the default and ignores subfolders entirely, **All subfolders** descends without limit, and **Limit depth to…** descends the number of levels set beside it, so 1 means the folder you picked plus one level down.",
+                "Sidecar verification uses the same setting, so a verify run looks at exactly the files a hash run would. Verifying less deeply than the run that wrote the sidecars would report **NO SIDECAR** for files the hash run never visited.",
             ]),
             HelpSection(heading: "Limit to file types", paragraphs: [
                 "Check this to restrict the scan to specific file types, then enter a comma-separated list of extensions, for example: `pkg, dmg, zip`. The **Suggestions** menu inserts common ones. Leading dots and capitalization do not matter; `.PKG` and `pkg` mean the same thing.",

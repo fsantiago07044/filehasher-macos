@@ -35,7 +35,36 @@ final class AppModel: ObservableObject {
     @Published var targetPath = "" {
         didSet { updateFolderOptionsEnabled() }
     }
-    @Published var scanRecursively = false
+    /// Subfolder depth, mirroring the Windows app's Subfolders control. The
+    /// cases are listed in the same order there; only the DEFAULT differs,
+    /// because this app has always stopped at the top level.
+    enum DepthMode: String, CaseIterable, Identifiable {
+        case allSubfolders
+        case thisFolderOnly
+        case limitTo
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .allSubfolders:  return "All subfolders"
+            case .thisFolderOnly: return "This folder only"
+            case .limitTo:        return "Limit depth to…"
+            }
+        }
+    }
+
+    @Published var depthMode: DepthMode = .thisFolderOnly
+    @Published var depthLevels: Int = 1
+
+    /// The depth the Target controls describe, in HashOptions terms.
+    var maxDepth: Int? {
+        switch depthMode {
+        case .allSubfolders:  return nil
+        case .thisFolderOnly: return 0
+        case .limitTo:        return depthLevels
+        }
+    }
     @Published var limitFileTypes = false
     @Published var fileTypesText = ""
     @Published private(set) var folderOptionsEnabled = false
@@ -94,7 +123,7 @@ final class AppModel: ObservableObject {
 
     func browseForFolder() {
         let panel = NSOpenPanel()
-        panel.title = "Select a folder to scan recursively"
+        panel.title = "Select a folder to scan"
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
@@ -211,7 +240,7 @@ final class AppModel: ObservableObject {
             writeSidecarHashes: writeSidecars,
             sidecarExtension:   sidecarExtension.trimmingCharacters(in: .whitespaces),
             sidecarFormat:      sidecarFormat,
-            maxDepth:           (!isFile && scanRecursively) ? nil : 0,
+            maxDepth:           isFile ? nil : maxDepth,
             fileTypeFilter:     typeFilter)
 
         guard let logger = startRun(columnTitle: opts.algorithm.rawValue) else { return }
@@ -392,13 +421,13 @@ final class AppModel: ObservableObject {
 
         guard let logger = startRun(columnTitle: "Verification") else { return }
         logger.logInfo("Verify sidecars | Target: \(path)  |  Extension: \(ext)  |  "
-            + "Depth: \(Self.describeDepth((!isFile && scanRecursively) ? nil : 0))  |  "
+            + "Depth: \(Self.describeDepth(isFile ? nil : maxDepth))  |  "
             + "Types: \(typeFilter.isEmpty ? "(all)" : typeFilter.joined(separator: ","))")
 
         statusText = "Enumerating sidecars…"
         let verifier = SidecarVerifier(targetPath: path, isFile: isFile,
                                        sidecarExtension: ext,
-                                       maxDepth: (!isFile && scanRecursively) ? nil : 0,
+                                       maxDepth: isFile ? nil : maxDepth,
                                        fileTypeFilter: typeFilter,
                                        cancel: cancelFlag)
         runTask = Task { await self.performVerify(verifier, extension: ext, logger: logger) }

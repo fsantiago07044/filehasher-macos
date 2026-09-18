@@ -33,9 +33,27 @@ struct ContentView: View {
                     Button("Browse Folder…") { model.browseForFolder() }
                         .disabled(model.isRunning)
                 }
-                Toggle("Include subfolders  (scan the folder recursively)",
-                       isOn: $model.scanRecursively)
-                    .disabled(!model.folderOptionsEnabled)
+                HStack(spacing: 8) {
+                    Text("Subfolders:")
+                    Picker("", selection: $model.depthMode) {
+                        ForEach(AppModel.DepthMode.allCases) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(width: 180)
+                    // Kept visible but disabled off the "Limit depth to…" case,
+                    // rather than appearing and disappearing, so the row does
+                    // not change height as the picker changes.
+                    Stepper(value: $model.depthLevels, in: 1...64) {
+                        Text("\(model.depthLevels) level\(model.depthLevels == 1 ? "" : "s") deep")
+                            .foregroundStyle(model.depthMode == .limitTo ? .primary : .secondary)
+                    }
+                    .disabled(model.depthMode != .limitTo)
+                    .frame(width: 170)
+                    Spacer()
+                }
+                .disabled(!model.folderOptionsEnabled)
                 HStack(spacing: 8) {
                     Toggle("Limit to file types:", isOn: $model.limitFileTypes)
                     TextField("e.g. pkg, dmg, zip", text: $model.fileTypesText)
