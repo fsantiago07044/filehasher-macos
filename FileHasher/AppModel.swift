@@ -76,11 +76,13 @@ final class AppModel: ObservableObject {
 
     // ── Algorithm ────────────────────────────────────────────────────────────
     @Published var algorithm: HashAlgorithmKind = .sha256 {
-        didSet { algorithmChanged() }
+        didSet { algorithmChanged(); savePreferences() }
     }
 
     // ── Options ──────────────────────────────────────────────────────────────
-    @Published var includeMetadata = false
+    @Published var includeMetadata = false {
+        didSet { savePreferences() }
+    }
     @Published var writeSidecars = false
     @Published var sidecarExtension = ".sha256"
     @Published var sidecarFormat: SidecarFormat = .algoSum
@@ -153,6 +155,56 @@ final class AppModel: ObservableObject {
 
     /// Recursion and the file-type limit only matter when more than one file
     /// could be hashed, i.e. when the target is a folder.
+    // ── Preferences ──────────────────────────────────────────────────────────
+    //
+    // Only the two controls the UI never disables are remembered, the same rule
+    // the Windows app settled on: if a control's enabled state depends on the
+    // target, its value describes that target rather than a standing
+    // preference. So the Subfolders depth and the file-type filter (gated by
+    // folderOptionsEnabled), the sidecar extension and format (gated by
+    // writeSidecars) and the CSV path (gated by exportCsv) all reset, as does
+    // the target path itself.
+    //
+    // Nothing that WRITES files is remembered either: sidecar writing and CSV
+    // export always start off, so a run only ever creates files because the box
+    // was ticked in that session.
+    //
+    // Stored in UserDefaults, which for the App Store build lands in the
+    // sandbox container. The standalone Developer ID build therefore keeps its
+    // own separate preferences on the same machine; that is deliberate
+    // (2026-09-18), since sharing them would mean an app group entitlement on a
+    // shipping sandboxed product.
+
+    private enum PreferenceKey {
+        static let algorithm       = "algorithm"
+        static let includeMetadata = "includeMetadata"
+    }
+
+    private let defaults: UserDefaults
+
+    /// - Parameter defaults: injectable so tests can use their own suite rather
+    ///   than reading and overwriting the real user's preferences.
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+
+        if let raw = defaults.string(forKey: PreferenceKey.algorithm),
+           let restored = HashAlgorithmKind(rawValue: raw) {
+            algorithm = restored
+        }
+        includeMetadata = defaults.bool(forKey: PreferenceKey.includeMetadata)
+
+        // Property observers do not fire during initialisation, and the sidecar
+        // extension is deliberately not persisted, so derive it from the
+        // restored algorithm exactly as choosing that algorithm by hand would.
+        // Without this, restoring SHA512 would leave the extension at .sha256.
+        algorithmChanged()
+    }
+
+    private func savePreferences() {
+        defaults.set(algorithm.rawValue, forKey: PreferenceKey.algorithm)
+        defaults.set(includeMetadata, forKey: PreferenceKey.includeMetadata)
+    }
+
     /// Human-readable form of HashOptions.maxDepth, for the run's log header.
     static func describeDepth(_ maxDepth: Int?) -> String {
         switch maxDepth {

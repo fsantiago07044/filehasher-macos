@@ -23,6 +23,7 @@
 		5FA3D7619B9904704CCD2723 /* SidecarVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C3AA88321E7E43F027B063 /* SidecarVerifier.swift */; };
 		62E4B0733AB0010D6D2A0DC7 /* HelpContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5176C3D8E9F97DB86DF4EB9C /* HelpContent.swift */; };
 		6F0E4C01BC0360DEE60C1DBA /* HashEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */; };
+		AF0AFC5CDC91714107196D64 /* PreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA119E03BCAF78D2AFC4CBEB /* PreferencesTests.swift */; };
 		83AF209BC185596280591E78 /* FileHasherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0E9779E338D3770FA0ADFC /* FileHasherApp.swift */; };
 		A23C909C238FF5D0FD20573C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95E7763A308932291E7FD76A /* Assets.xcassets */; };
 		A571CD8BCB52C66E300FD1AE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E3E9B3366C5B3F0EF11F90 /* AppModel.swift */; };
@@ -62,6 +63,7 @@
 		7583868A0F89D0861B2A2F99 /* HashWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashWorker.swift; sourceTree = "<group>"; };
 		95E7763A308932291E7FD76A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashEngineTests.swift; sourceTree = "<group>"; };
+		EA119E03BCAF78D2AFC4CBEB /* PreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTests.swift; sourceTree = "<group>"; };
 		A17B92C1E250AFD9CE3354E0 /* FileHasher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileHasher.entitlements; sourceTree = "<group>"; };
 		A99FA05D85EBCF2A19658F06 /* FileHasher-Standalone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "FileHasher-Standalone.entitlements"; sourceTree = "<group>"; };
 		BB1504962E68C68D467C8EF6 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				99ED722841D8BEBEFC3CD730 /* HashEngineTests.swift */,
+				EA119E03BCAF78D2AFC4CBEB /* PreferencesTests.swift */,
 			);
 			path = FileHasherTests;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6F0E4C01BC0360DEE60C1DBA /* HashEngineTests.swift in Sources */,
+				AF0AFC5CDC91714107196D64 /* PreferencesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
