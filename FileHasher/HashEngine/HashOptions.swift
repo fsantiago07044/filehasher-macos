@@ -21,7 +21,20 @@ struct HashOptions: Sendable {
     var writeSidecarHashes: Bool
     var sidecarExtension: String   // e.g. ".sha256"
     var sidecarFormat: SidecarFormat
-    var recursive: Bool            // folder targets: descend into subfolders (off by default)
+    /// Folder targets: how far below the chosen folder to descend.
+    ///
+    ///   nil  unlimited
+    ///   0    the chosen folder only, no subfolders (the default here, and what
+    ///        every released version of the Mac app has done)
+    ///   n    n levels below the chosen folder
+    ///
+    /// Matches HashOptions.MaxDepth in the Windows app so a scan described one
+    /// way behaves the same on both platforms. The DEFAULT deliberately differs:
+    /// Windows has always descended without limit and stays that way, while this
+    /// app has always stopped at the top level and stays that way. Converging the
+    /// model without converging the default is the point; changing either app's
+    /// behaviour would silently alter what existing users' scans cover.
+    var maxDepth: Int?
     var fileTypeFilter: [String]   // lowercased extensions without dots; empty = hash all files
 
     /// Parses a user-typed, comma-separated list of file types into normalized

@@ -44,9 +44,10 @@ struct HashWorker: Sendable {
         let fm = FileManager.default
         var results:  [String] = []
         var warnings: [String] = []
-        var stack = [options.targetPath]
+        // Depth-bounded walk; the chosen folder sits at depth 0.
+        var stack: [(dir: String, depth: Int)] = [(options.targetPath, 0)]
 
-        while let dir = stack.popLast() {
+        while let (dir, depth) = stack.popLast() {
             try cancel.check()
 
             let entries: [String]
@@ -64,8 +65,8 @@ struct HashWorker: Sendable {
                 guard fm.fileExists(atPath: full, isDirectory: &isDir) else { continue }
 
                 if isDir.boolValue {
-                    if options.recursive {
-                        stack.append(full)
+                    if options.maxDepth == nil || depth < options.maxDepth! {
+                        stack.append((full, depth + 1))
                     }
                     continue
                 }

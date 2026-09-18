@@ -57,7 +57,10 @@ struct SidecarVerifier: Sendable {
     let targetPath: String
     let isFile: Bool
     let sidecarExtension: String
-    let recursive: Bool            // folder targets: descend into subfolders
+    /// Folder targets: how far below the chosen folder to descend. Must match
+    /// what the hash run used, or a shallower verify reports missing sidecars
+    /// for files the hash run never looked at. See HashOptions.maxDepth.
+    let maxDepth: Int?
     let fileTypeFilter: [String]   // empty = audit every file lacking a sidecar
     let cancel: CancelFlag
 
@@ -87,9 +90,9 @@ struct SidecarVerifier: Sendable {
         // files lacking one.
         var all:      [String] = []
         var warnings: [String] = []
-        var stack = [targetPath]
+        var stack: [(dir: String, depth: Int)] = [(targetPath, 0)]
 
-        while let dir = stack.popLast() {
+        while let (dir, depth) = stack.popLast() {
             try cancel.check()
 
             let entries: [String]
@@ -105,8 +108,8 @@ struct SidecarVerifier: Sendable {
                 var isDir: ObjCBool = false
                 guard fm.fileExists(atPath: full, isDirectory: &isDir) else { continue }
                 if isDir.boolValue {
-                    if recursive {
-                        stack.append(full)
+                    if maxDepth == nil || depth < maxDepth! {
+                        stack.append((full, depth + 1))
                     }
                 } else {
                     all.append(full)

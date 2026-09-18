@@ -91,12 +91,12 @@ final class HashEngineTests: XCTestCase {
 
     // ── Enumeration: defaults, recursion, filter, sidecar exclusion ──────────
 
-    private func enumOptions(recursive: Bool = false, filter: [String] = [],
+    private func enumOptions(maxDepth: Int? = 0, filter: [String] = [],
                              writeSidecars: Bool = false) -> HashOptions {
         HashOptions(targetPath: tempDir.path, isFile: false,
                     algorithm: .sha256, includeMetadata: false,
                     writeSidecarHashes: writeSidecars, sidecarExtension: ".sha256",
-                    sidecarFormat: .algoSum, recursive: recursive, fileTypeFilter: filter)
+                    sidecarFormat: .algoSum, maxDepth: maxDepth, fileTypeFilter: filter)
     }
 
     private func enumerate(_ opts: HashOptions) throws -> Set<String> {
@@ -116,9 +116,30 @@ final class HashEngineTests: XCTestCase {
         // Default: every top-level file, no recursion into sub/.
         XCTAssertEqual(try enumerate(enumOptions()), ["a.exe", "c.txt"])
 
-        // Recursive: sub/ is included.
-        XCTAssertEqual(try enumerate(enumOptions(recursive: true)),
+        // Unlimited: sub/ is included.
+        XCTAssertEqual(try enumerate(enumOptions(maxDepth: nil)),
                        ["a.exe", "c.txt", "nested.pkg"])
+    }
+
+    /// Depth semantics, matching HashOptions.MaxDepth in the Windows app:
+    /// nil unlimited, 0 the chosen folder only, n levels below it. The default
+    /// staying 0 is what keeps this app's behaviour unchanged; the first
+    /// assertion here is the regression guard on that.
+    func testEnumerationDepthLimits() throws {
+        try makeFile("root.pkg", "1")
+        try FileManager.default.createDirectory(
+            at: tempDir.appendingPathComponent("one/two"), withIntermediateDirectories: true)
+        try makeFile("one/first.pkg", "2")
+        try makeFile("one/two/second.pkg", "3")
+
+        XCTAssertEqual(try enumerate(enumOptions()), ["root.pkg"],
+                       "Default must stay top-level only.")
+        XCTAssertEqual(try enumerate(enumOptions(maxDepth: 0)), ["root.pkg"])
+        XCTAssertEqual(try enumerate(enumOptions(maxDepth: 1)), ["root.pkg", "first.pkg"])
+        XCTAssertEqual(try enumerate(enumOptions(maxDepth: 2)),
+                       ["root.pkg", "first.pkg", "second.pkg"])
+        XCTAssertEqual(try enumerate(enumOptions(maxDepth: nil)),
+                       ["root.pkg", "first.pkg", "second.pkg"])
     }
 
     func testEnumerationFileTypeFilter() throws {
@@ -131,7 +152,7 @@ final class HashEngineTests: XCTestCase {
 
         XCTAssertEqual(try enumerate(enumOptions(filter: ["pkg", "dmg"])),
                        ["installer.pkg", "image.dmg"])
-        XCTAssertEqual(try enumerate(enumOptions(recursive: true, filter: ["pkg"])),
+        XCTAssertEqual(try enumerate(enumOptions(maxDepth: nil, filter: ["pkg"])),
                        ["installer.pkg", "other.pkg"])
     }
 
@@ -151,7 +172,7 @@ final class HashEngineTests: XCTestCase {
         let opts = HashOptions(targetPath: path, isFile: true,
                                algorithm: .sha256, includeMetadata: true,
                                writeSidecarHashes: true, sidecarExtension: ".sha256",
-                               sidecarFormat: .algoSum, recursive: false, fileTypeFilter: [])
+                               sidecarFormat: .algoSum, maxDepth: 0, fileTypeFilter: [])
         let worker = HashWorker(options: opts, cancel: CancelFlag())
         let logger = try Logger()
 
@@ -174,10 +195,10 @@ final class HashEngineTests: XCTestCase {
     // ── Verifier ─────────────────────────────────────────────────────────────
 
     private func verify(target: String, isFile: Bool, ext: String = ".sha256",
-                        recursive: Bool = false,
+                        maxDepth: Int? = 0,
                         filter: [String] = []) throws -> [VerifyResult] {
         let verifier = SidecarVerifier(targetPath: target, isFile: isFile,
-                                       sidecarExtension: ext, recursive: recursive,
+                                       sidecarExtension: ext, maxDepth: maxDepth,
                                        fileTypeFilter: filter, cancel: CancelFlag())
         let (items, _) = try verifier.enumerateWork()
         var results: [VerifyResult] = []

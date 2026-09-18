@@ -124,6 +124,15 @@ final class AppModel: ObservableObject {
 
     /// Recursion and the file-type limit only matter when more than one file
     /// could be hashed, i.e. when the target is a folder.
+    /// Human-readable form of HashOptions.maxDepth, for the run's log header.
+    static func describeDepth(_ maxDepth: Int?) -> String {
+        switch maxDepth {
+        case .none:   return "unlimited"
+        case .some(0): return "this folder only"
+        case .some(let n): return "\(n) level(s)"
+        }
+    }
+
     private func updateFolderOptionsEnabled() {
         let path = targetPath.trimmingCharacters(in: .whitespaces)
         var isDir: ObjCBool = false
@@ -202,12 +211,12 @@ final class AppModel: ObservableObject {
             writeSidecarHashes: writeSidecars,
             sidecarExtension:   sidecarExtension.trimmingCharacters(in: .whitespaces),
             sidecarFormat:      sidecarFormat,
-            recursive:          !isFile && scanRecursively,
+            maxDepth:           (!isFile && scanRecursively) ? nil : 0,
             fileTypeFilter:     typeFilter)
 
         guard let logger = startRun(columnTitle: opts.algorithm.rawValue) else { return }
         logger.logInfo("Target: \(path)  |  Algorithm: \(opts.algorithm.rawValue)  |  "
-            + "Recursive: \(opts.recursive)  |  "
+            + "Depth: \(Self.describeDepth(opts.maxDepth))  |  "
             + "Types: \(opts.fileTypeFilter.isEmpty ? "(all)" : opts.fileTypeFilter.joined(separator: ","))  |  "
             + "Metadata: \(opts.includeMetadata)  |  Sidecar: \(opts.writeSidecarHashes)")
 
@@ -383,13 +392,13 @@ final class AppModel: ObservableObject {
 
         guard let logger = startRun(columnTitle: "Verification") else { return }
         logger.logInfo("Verify sidecars | Target: \(path)  |  Extension: \(ext)  |  "
-            + "Recursive: \(!isFile && scanRecursively)  |  "
+            + "Depth: \(Self.describeDepth((!isFile && scanRecursively) ? nil : 0))  |  "
             + "Types: \(typeFilter.isEmpty ? "(all)" : typeFilter.joined(separator: ","))")
 
         statusText = "Enumerating sidecars…"
         let verifier = SidecarVerifier(targetPath: path, isFile: isFile,
                                        sidecarExtension: ext,
-                                       recursive: !isFile && scanRecursively,
+                                       maxDepth: (!isFile && scanRecursively) ? nil : 0,
                                        fileTypeFilter: typeFilter,
                                        cancel: cancelFlag)
         runTask = Task { await self.performVerify(verifier, extension: ext, logger: logger) }
