@@ -66,21 +66,28 @@ differ. See "Parity with the Windows app" below.
   cannot disturb them, unlike the Windows FlaUI suite.
 - The target is **app-hosted** (`TEST_HOST` is FileHasher.app), so running them
   launches the real app; its window appears briefly and may steal focus.
-- **`xcodebuild test` does not work from the CLI here, cause unknown
-  (2026-09-18).** It fails with *"Could not launch FileHasherTests ... The file
-  FileHasher.app couldn't be opened because there is no such file"*, which is
-  false: the bundle exists and `codesign --verify --deep --strict` passes.
-  **Ruled out, do not re-chase:** the external volumes and DerivedData location
-  (fails on internal paths too), code signing, provisioning
-  (`-allowProvisioningUpdates` embedded no profile and changed nothing; the only
-  profile on disk is a Mac Team **Store** profile, which is what release builds
-  need), and `clean test`. Stripping the sandbox
-  (`CODE_SIGN_ENTITLEMENTS="" ENABLE_APP_SANDBOX=NO`) worked **once** and never
-  again, so do not present it as the fix. The leading untested hypothesis is
-  TCC: Xcode may need Files and Folders > Removable Volumes or Full Disk Access,
-  and the test runner runs in the background so it never triggers the prompt.
-- Until that is solved: **compile-gate here, and ask Fabian to run the suite in
-  Xcode.** Do not claim tests pass on the strength of a build.
+- **`xcodebuild test` works, but the process running it needs FULL DISK
+  ACCESS** (System Settings > Privacy & Security), because Xcode lives on an
+  external volume. Granted 2026-09-19. Without it every run fails with *"Could
+  not launch FileHasherTests ... The file FileHasher.app couldn't be opened
+  because there is no such file"*, which is a TCC denial wearing a
+  file-not-found costume: the bundle is present and
+  `codesign --verify --deep --strict` passes throughout.
+- **The target is the CALLING process, not Xcode.** An afternoon went into
+  testing whether Xcode could reach the volume before that landed. If the
+  symptom returns, on another machine or after a TCC reset, check Full Disk
+  Access for whatever invokes `xcodebuild` first. Already ruled out and not
+  worth re-chasing: DerivedData location, code signing, provisioning
+  (`-allowProvisioningUpdates` embedded no profile and changed nothing),
+  `clean test`, and stripping the sandbox entitlement.
+- Baseline **30 tests** (HashEngineTests 17, PathSeedTests 7, PreferencesTests
+  6), green as of 2026-09-19, with the plain command and no overrides:
+
+  ```bash
+  xcodebuild test -project FileHasher.xcodeproj -scheme FileHasher \
+    -destination 'platform=macOS' -configuration Debug -derivedDataPath /tmp/fh-test
+  ```
+
 - Anything touching preferences must use an injected `UserDefaults` suite, never
   `.standard`. `AppModel(defaults:)` exists for exactly this: the app-hosted
   tests run inside the real app and would otherwise read and overwrite Fabian's
@@ -114,6 +121,12 @@ differ. See "Parity with the Windows app" below.
 - The hash walk and the sidecar verifier **must** be given the same depth. A
   shallower verify than the run that wrote the sidecars reports `NO SIDECAR` for
   files the hash run never visited.
+- **Property observers DO fire during `init` for `@Published` properties**,
+  because the assignment goes through the wrapper's setter. `AppModel` guards
+  `savePreferences()` with `isLoading` for exactly this: without it, restoring
+  the first value writes every OTHER key at its pre-load default and clobbers
+  what is on disk before it has been read. The symptom was the algorithm
+  surviving a restart while include-metadata silently reverted.
 - **Preferences follow one rule:** if a control's enabled state depends on the
   target, its value describes that target rather than a standing preference, so
   it is not persisted. Nothing that writes files is persisted either. Here that
