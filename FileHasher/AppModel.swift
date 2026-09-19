@@ -112,12 +112,62 @@ final class AppModel: ObservableObject {
 
     // ── Target selection ─────────────────────────────────────────────────────
 
+    /// Where a panel should open, given a path the user already has in a box.
+    ///
+    /// Without this the panels open wherever the shell's recent-folder list
+    /// last pointed, which is usually some other app's doing. Mirrors
+    /// MainForm.SeedFromPath in the Windows app, including how it degrades:
+    ///
+    /// - An existing folder opens inside itself; an existing file opens at its
+    ///   parent so the file can be pre-selected.
+    /// - A stale path climbs to the deepest ancestor that still exists. The
+    ///   leaf name is kept only when its immediate parent survived, and is
+    ///   dropped as soon as a directory level has to be walked past: naming a
+    ///   file inside a folder it never came from is worse than naming nothing.
+    /// - Empty or fully vanished paths return nothing, leaving the panel at the
+    ///   shell default.
+    ///
+    /// Existence is probed with FileManager, which reports false rather than
+    /// throwing on a permission or I/O failure, so a browse click cannot fail
+    /// because of this.
+    static func seedFromPath(_ raw: String) -> (folder: URL?, fileName: String?) {
+        let trimmed = raw.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return (nil, nil) }
+
+        let fm = FileManager.default
+        var isDir: ObjCBool = false
+
+        if fm.fileExists(atPath: trimmed, isDirectory: &isDir) {
+            let url = URL(fileURLWithPath: trimmed)
+            return isDir.boolValue
+                ? (url, nil)
+                : (url.deletingLastPathComponent(), url.lastPathComponent)
+        }
+
+        let full = URL(fileURLWithPath: trimmed)
+        let leaf = full.lastPathComponent
+        var parent = full.deletingLastPathComponent()
+        var leafStillBelongsHere = true
+
+        while parent.path != "/" && !parent.path.isEmpty {
+            if fm.fileExists(atPath: parent.path, isDirectory: &isDir), isDir.boolValue {
+                return (parent, leafStillBelongsHere ? leaf : nil)
+            }
+            parent = parent.deletingLastPathComponent()
+            leafStillBelongsHere = false
+        }
+        return (nil, nil)
+    }
+
     func browseForFile() {
         let panel = NSOpenPanel()
         panel.title = "Select a file to hash"
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
+        if let folder = Self.seedFromPath(targetPath).folder {
+            panel.directoryURL = folder
+        }
         if panel.runModal() == .OK, let url = panel.url {
             setTarget(url)
         }
@@ -129,6 +179,9 @@ final class AppModel: ObservableObject {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
+        if let folder = Self.seedFromPath(targetPath).folder {
+            panel.directoryURL = folder
+        }
         if panel.runModal() == .OK, let url = panel.url {
             setTarget(url)
         }
@@ -138,9 +191,20 @@ final class AppModel: ObservableObject {
         let panel = NSSavePanel()
         panel.title = "Save results as CSV"
         panel.allowedContentTypes = [.commaSeparatedText]
-        let stamp = DateFormatter()
-        stamp.dateFormat = "yyyyMMdd_HHmmss"
-        panel.nameFieldStringValue = "FileHasher_\(stamp.string(from: Date())).csv"
+        // Reopen where the user last chose, keeping the name they picked
+        // rather than replacing it with a fresh timestamp. Only fall back to a
+        // generated name when there is nothing to reuse.
+        let seed = Self.seedFromPath(csvPath)
+        if let folder = seed.folder {
+            panel.directoryURL = folder
+        }
+        if let existingName = seed.fileName, !existingName.isEmpty {
+            panel.nameFieldStringValue = existingName
+        } else {
+            let stamp = DateFormatter()
+            stamp.dateFormat = "yyyyMMdd_HHmmss"
+            panel.nameFieldStringValue = "FileHasher_\(stamp.string(from: Date())).csv"
+        }
         if panel.runModal() == .OK, let url = panel.url {
             accessGrants.append(url)
             csvPath = url.path
