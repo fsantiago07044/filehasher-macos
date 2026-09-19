@@ -13,3 +13,7 @@ AuthKey_*
 *sparkle*priv*
 *.key
 release-work/
+
+# Claude Code per-machine settings: local permissions, never shared.
+# The committed .claude/settings.json is the shared one.
+.claude/settings.local.json
