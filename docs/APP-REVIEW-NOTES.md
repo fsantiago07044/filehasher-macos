@@ -64,7 +64,7 @@ folder containing files (any file types work, for example a folder of
 documents), and click Run to hash them. To exercise verification, check
 "Write sidecar hash files next to each file" before running, then click
 "Verify Sidecars" after the run completes; every file should report OK.
-Optional features: "Include subfolders" scans recursively, "Limit to
+Optional features: "Subfolders" sets how deep a folder scan goes, "Limit to
 file types" restricts a scan to a comma-separated extension list, and
 "Export results to CSV" saves a spreadsheet via the standard save panel.
 

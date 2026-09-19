@@ -56,7 +56,16 @@ The UI mirrors the Windows app:
 
 - **Target** — pick a file or folder with the browse buttons, drag-and-drop onto the
   Target box, or type a path. Folder scans hash **every file by default**, top level only.
-- **Include subfolders** — check to scan the folder recursively (off by default).
+  The browse panels open at whatever the Target box already holds rather than wherever
+  the system last pointed; a path that no longer exists falls back to the deepest folder
+  that still does.
+- **Subfolders** — how far below the chosen folder the scan reaches: *This folder only*
+  (the default), *All subfolders*, or *Limit depth to* a set number of levels, where 1
+  means the chosen folder plus one level down. Sidecar verification uses the same
+  setting, so a verify run sees exactly the files a hash run would; verifying less
+  deeply than the run that wrote the sidecars would report `NO SIDECAR` for files it
+  never visited. Same control and same three choices as the Windows app, which defaults
+  to *All subfolders* instead: each platform keeps the behaviour it has always had.
 - **Limit to file types** — optionally restrict a folder scan to a comma-separated
   list of extensions you type yourself (a Suggestions menu offers common ones:
   pkg, dmg, iso, zip, exe, msi). Off, or an empty list, means every file is scanned.
@@ -82,6 +91,15 @@ The UI mirrors the Windows app:
   `~/Library/Containers/com.fabianasantiago.FileHasher/Data/Library/Application Support/FileHasher/Logs/FileHasher_YYYY-MM-DD.log`.
   Click the log path in the status bar to open the folder.
 
+- **Preferences** — the hash algorithm and *Include file metadata* are remembered
+  between runs. Nothing else is, deliberately: anything describing the current target
+  (the target path, **Subfolders** depth, the file-type filter) resets, and so does
+  anything that writes files (*Write sidecar hash files* with its extension and format,
+  *Export results to CSV* with its path), so a run only ever creates files because the
+  box was ticked in that session. Stored in `UserDefaults`, which for the Mac App Store
+  edition lives in its sandbox container, so the two editions keep separate preferences
+  on the same machine.
+
 ## Differences from the Windows app
 
 | Windows | macOS |
@@ -90,6 +108,10 @@ The UI mirrors the Windows app:
 | Hash files inside MSI installers (experimental) | Not ported — depends on the Windows Installer database API |
 | Open PowerShell / Command Prompt here | Open Terminal Here |
 | Open in File Explorer | Reveal in Finder |
+| **Subfolders** defaults to *All subfolders* | **Subfolders** defaults to *This folder only* |
+| Default filter is `.exe` and `.msi`, with a checkbox for every file type | Every file by default, with an optional typed extension list |
+| Preferences saved when the window closes | Preferences saved as you change them |
+| Open dialog pre-selects the target file | Opens at the target's folder; `NSOpenPanel` has no equivalent |
 
 ### Sandbox notes
 

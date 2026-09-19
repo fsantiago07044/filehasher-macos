@@ -25,7 +25,7 @@ Primary: **Utilities** · Secondary (optional): **Developer Tools**
 FileHasher computes cryptographic hashes for your files and folders, writes standard sidecar hash files next to them, and verifies everything later, so you can prove a download, an installer, a backup, or an archive hasn't changed since you hashed it.
 
 HASH
-• Hash a single file or a folder of files, with optional subfolder recursion
+• Hash a single file or a folder of files, scanning the folder alone or to any subfolder depth
 • Optionally limit a folder scan to file types you choose (pkg, dmg, zip, and more)
 • Four algorithms: MD5, SHA-1, SHA-256, and SHA-512
 • Drag and drop a file or folder straight onto the window

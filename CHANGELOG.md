@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+- **Subfolders depth control**, replacing the *Include subfolders* checkbox. Choose
+  *This folder only* (still the default), *All subfolders*, or *Limit depth to* a set
+  number of levels. Sidecar verification uses the same depth as hashing, so the two
+  cannot disagree about which files exist. The engine now carries a depth rather than a
+  boolean, matching the Windows app; the default is unchanged on both platforms, which
+  deliberately means they still differ
+- **Preferences are remembered between runs**: the hash algorithm and *Include file
+  metadata*. Nothing else is, by design. Anything that describes the current target (the
+  target path, the Subfolders depth, the file-type filter) resets, as does anything that
+  writes files (*Write sidecar hash files* with its extension and format, and *Export
+  results to CSV* with its path), so a run only ever creates files because the box was
+  ticked in that session. Stored in `UserDefaults`; the Mac App Store and Standalone
+  editions keep separate preferences, since the sandboxed build stores them in its own
+  container
+- **Browse panels open where you already are** rather than wherever the shell last
+  pointed: the file picker at the target's folder, the folder picker at the target
+  folder, and the CSV panel at the last export folder, keeping the filename you chose
+  instead of generating a fresh timestamp. A stale path falls back to the deepest folder
+  that still exists
+
 ## 1.0.2, released 2026-08-31 (Standalone edition debut, GitHub; Mac App Store edition unchanged at 1.0.1)
 
 - New Standalone edition, distributed outside the Mac App Store: Developer ID
