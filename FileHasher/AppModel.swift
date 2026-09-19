@@ -246,6 +246,18 @@ final class AppModel: ObservableObject {
 
     private let defaults: UserDefaults
 
+    /// True only while init is populating properties from UserDefaults.
+    ///
+    /// Property observers on @Published properties DO fire during
+    /// initialisation, because the assignment goes through the wrapper's
+    /// setter rather than the stored property directly. Without this guard the
+    /// first restored value's didSet calls savePreferences(), which writes
+    /// EVERY key, and the ones not yet loaded are still at their defaults, so
+    /// it clobbers what is on disk a line before it gets read back. The symptom
+    /// was that the algorithm survived a restart (written and read first) while
+    /// include-metadata silently reverted; PreferencesTests caught it.
+    private var isLoading = true
+
     /// - Parameter defaults: injectable so tests can use their own suite rather
     ///   than reading and overwriting the real user's preferences.
     init(defaults: UserDefaults = .standard) {
@@ -257,14 +269,17 @@ final class AppModel: ObservableObject {
         }
         includeMetadata = defaults.bool(forKey: PreferenceKey.includeMetadata)
 
-        // Property observers do not fire during initialisation, and the sidecar
-        // extension is deliberately not persisted, so derive it from the
-        // restored algorithm exactly as choosing that algorithm by hand would.
-        // Without this, restoring SHA512 would leave the extension at .sha256.
+        // The sidecar extension is deliberately not persisted, so derive it
+        // from the restored algorithm exactly as choosing that algorithm by
+        // hand would. Without this, restoring SHA512 would leave the extension
+        // at .sha256.
         algorithmChanged()
+
+        isLoading = false
     }
 
     private func savePreferences() {
+        guard !isLoading else { return }
         defaults.set(algorithm.rawValue, forKey: PreferenceKey.algorithm)
         defaults.set(includeMetadata, forKey: PreferenceKey.includeMetadata)
     }
