@@ -120,6 +120,27 @@ differ. See "Parity with the Windows app" below.
   and silently issues from the dying authority; that cost a certificate slot on
   2026-10-21. Only developer.apple.com exposes the G2 Sub-CA choice, and it
   wants a CSR from Keychain Access. Full writeup in `docs/RELEASING.md`.
+- **Check App Store Connect before uploading anything.** Fabian uploads too, and
+  on 2026-10-21 an agent uploaded a second copy twelve minutes after his. One
+  API call would have shown the build already sitting there. The build list is
+  `GET /v1/builds?filter[app]=<id>&sort=-uploadedDate` with an ES256 JWT.
+- **`xcodebuild -exportArchive` silently bumps the build number** when that
+  number is already in App Store Connect, recording it only in the export's
+  `DistributionSummary.plist`. That is how a build 5 source tree produced an
+  uploaded build 6 that exists in no commit. Read `buildNumber` back after every
+  export and refuse a mismatch against `CURRENT_PROJECT_VERSION`.
+- **Expired distribution certificates prove nothing.** Every Apple Distribution
+  and 3rd Party Mac Developer Installer certificate in the keychain is expired
+  (2021 and 2025), and App Store signing still works, because
+  `-allowProvisioningUpdates` uses a **cloud managed** certificate that leaves no
+  local identity. Do not conclude from `security find-identity` that a store
+  upload is impossible; it was concluded once and it was wrong.
+- **The App Store Connect API key is in Bitwarden**, not on disk: item
+  `claude_code_notary ASC developer api key` (Key ID `WU67FA9RHB`, Issuer ID in
+  the notes, `.p8` attached). The Bitwarden session file is
+  `~/.config/bw-1pw-sync/session`, NOT `~/.bw-session`; looking in the wrong
+  place and seeing `locked` is not evidence the key is missing. Write the `.p8`
+  to `~/.appstoreconnect/private_keys/` mode 600 for `altool`, then shred it.
 - The App Store edition ships separately; `docs/APP-STORE-SUBMISSION.md`,
   `docs/APP-STORE-LISTING.md` and `docs/APP-REVIEW-NOTES.md` cover it.
   `APP-REVIEW-NOTES.md` is a record of what was submitted for a past review, so

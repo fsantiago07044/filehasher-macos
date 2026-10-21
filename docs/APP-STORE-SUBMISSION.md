@@ -52,17 +52,71 @@ the paid membership. You can pre-create the two distribution certs there via
 
 ## 4. Build & submit
 
-```text
-Xcode → Product → Archive          (Release, x86_64)
-Organizer → Distribute App → App Store Connect → Upload
+Everything up to the submission itself runs from the command line. Only
+creating the version record and pressing Submit for Review is web-only.
+
+**Check what is already uploaded before building anything.** Two people, or a
+person and an agent, can each upload the same release; see the build-number
+warning below for why that is worse than it sounds.
+
+```bash
+export DEVELOPER_DIR="/Volumes/Storage_WD50_NVMe_SSD_2TB/Applications/Xcode.app/Contents/Developer"
+
+# 1. archive the App Store target (scheme FileHasher, never FileHasher-Standalone)
+xcodebuild archive -project FileHasher.xcodeproj -scheme FileHasher \
+  -configuration Release -destination 'generic/platform=macOS' \
+  -archivePath /tmp/fh-archive/FileHasher.xcarchive
+
+# 2. export a signed .pkg. ExportOptions.plist needs method app-store-connect,
+#    teamID 49KP5XUP9W, destination export, signingStyle automatic.
+xcodebuild -exportArchive \
+  -archivePath /tmp/fh-archive/FileHasher.xcarchive \
+  -exportOptionsPlist /tmp/fh-export/ExportOptions.plist \
+  -exportPath /tmp/fh-export/out \
+  -allowProvisioningUpdates
+
+# 3. validate, then upload
+xcrun altool --validate-app -f /tmp/fh-export/out/FileHasher.pkg -t macos \
+  --apiKey WU67FA9RHB --apiIssuer "$ISSUER"
+xcrun altool --upload-app   -f /tmp/fh-export/out/FileHasher.pkg -t macos \
+  --apiKey WU67FA9RHB --apiIssuer "$ISSUER"
 ```
 
-- First upload will prompt to create the distribution certificates — allow it.
+- **`-exportArchive` silently increments the build number.** If the build number
+  in `project.yml` is already uploaded, Xcode bumps it rather than failing, and
+  says so only in `DistributionSummary.plist` (`buildNumber`). On 2026-10-21 that
+  turned a build 5 export into an uploaded build 6, leaving a build in App Store
+  Connect that no commit produces. **Read `buildNumber` out of
+  `DistributionSummary.plist` after every export** and refuse to ship one that
+  does not match `CURRENT_PROJECT_VERSION`, because the tag is the only record of
+  what the source was.
+- **The API key lives in Bitwarden**, item `claude_code_notary ASC developer api
+  key`: Key ID `WU67FA9RHB`, the Issuer ID in its notes, and the `.p8` as an
+  attachment. `altool` reads it from `~/.appstoreconnect/private_keys/`. Write it
+  there mode 600 and shred it afterwards; it is not on disk by default and should
+  not be left there. Use the stored Bitwarden session, never a fresh `bw unlock`.
+- **Expired distribution certificates are not a blocker.** The Apple Distribution
+  and 3rd Party Mac Developer Installer certificates in the keychain expired in
+  2021 and 2025, and signing still works: `-allowProvisioningUpdates` signs with a
+  **cloud managed** certificate that never persists as a local identity. So
+  `security find-identity` showing nothing usable proves nothing. This is also why
+  the keychain cannot explain how earlier releases were signed.
 - After processing (~15 min), attach the build to a version in App Store Connect,
   fill the listing, and Submit for Review.
-- Intel-only is accepted by the store; Apple Silicon Macs run it under Rosetta.
-  Expect a reviewer note at most. Going universal later is a normal app update
-  (`ARCHS: "$(ARCHS_STANDARD)"` in project.yml).
+- **The app is universal** (`ARCHS: "$(ARCHS_STANDARD)"`), so both Apple Silicon
+  and Intel run natively; Rosetta is not involved.
+
+### Checking state before and after, without the web UI
+
+The App Store Connect API answers "what is already uploaded" with an ES256 JWT
+signed by the same `.p8`:
+
+```text
+GET /v1/apps?filter[bundleId]=com.fabianasantiago.FileHasher   -> app id
+GET /v1/builds?filter[app]=<id>&limit=8&sort=-uploadedDate     -> build numbers,
+                                                                  upload times,
+                                                                  processingState
+```
 
 ## 5. Sandbox facts relevant to review
 
