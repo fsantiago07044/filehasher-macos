@@ -45,12 +45,13 @@ differ. See "Parity with the Windows app" below.
     | grep -oE 'HashEngineTests|PreferencesTests|PathSeedTests' | sort -u
   ```
 
-- **New Swift files must be wired into `project.pbxproj` by hand.** The project
-  uses explicit `PBXFileReference`s with **no**
-  `PBXFileSystemSynchronizedRootGroup`, so a new file is silently excluded from
-  its target. Four entries are needed, mirroring an existing file with fresh
-  24-hex ids: a `PBXBuildFile`, a `PBXFileReference`, the group's `children`
-  entry, and the target's `Sources` phase entry.
+- **`project.yml` is the source of truth; run `xcodegen generate`.** The project
+  file is generated, and xcodegen picks up new Swift files from the filesystem,
+  so adding one needs no `project.pbxproj` surgery. Hand-editing that file does
+  work until the next `xcodegen generate`, which renumbers every id and discards
+  anything project.yml does not describe. A new file that is silently missing
+  from its target means `xcodegen generate` has not been run, not that four
+  entries need writing by hand. Verify either way with the `nm` check below.
 - **Every build rewrites `project.pbxproj`**, renaming the Standalone target's
   `productReference` from `FileHasher-Standalone.app` to `FileHasher.app`. It is
   cosmetic and safe to discard: both targets set `PRODUCT_NAME = FileHasher` and

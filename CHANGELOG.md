@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0, released 2026-10-21 (Standalone, GitHub; Mac App Store edition submitted for review)
 
 - **Subfolders depth control**, replacing the *Include subfolders* checkbox. Choose
   *This folder only* (still the default), *All subfolders*, or *Limit depth to* a set
