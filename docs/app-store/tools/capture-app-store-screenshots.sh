@@ -1,6 +1,12 @@
 #!/bin/bash
-# Regenerates the three Mac App Store screenshots in docs/app-store/ at the
-# 1440x900 Apple accepts. Filenames are referenced by docs/APP-STORE-LISTING.md.
+# Regenerates the three Mac App Store screenshots at the 1440x900 Apple accepts,
+# into docs/app-store/<version>/ so each release keeps its own set. Filenames
+# are referenced by docs/APP-STORE-LISTING.md.
+#
+# Names are version-stamped on purpose: App Store Connect carries the previous
+# version's screenshots into a new version record, and uploading a file whose
+# name matches one already in the set fails with "the screenshot couldn't be
+# saved". Distinct names sidestep that collision entirely.
 #
 # Requires: the driving process to have Accessibility permission (System
 # Settings > Privacy & Security > Accessibility). The app is driven through
@@ -20,7 +26,10 @@ set -euo pipefail
 
 APP="${1:-/tmp/fh-shots/Build/Products/Debug/FileHasher.app}"
 DEMO="${2:-$HOME/Downloads/FileHasher-Demo}"
-OUT="${3:-$(cd "$(dirname "$0")/.." && pwd)}"
+VERSION="${3:-$(awk '/MARKETING_VERSION:/ {print $2; exit}' "$(cd "$(dirname "$0")/../../.." && pwd)/project.yml")}"
+# Screenshots are kept per release, so an older listing's shots stay retrievable.
+OUT="${4:-$(cd "$(dirname "$0")/.." && pwd)/$VERSION}"
+mkdir -p "$OUT"
 WX=70; WY=25; WW=1440; WH=900     # window origin clear of a left-hand Dock
 
 say() { printf '==> %s\n' "$1"; }
@@ -98,7 +107,7 @@ sleep 7; dismiss
 drive "set position of window 1 to {$WX, $WY}
   set size of window 1 to {$WW, $WH}"
 say "  $(status)"
-shot "shot1-hash-1440x900.png"
+shot "filehasher-$VERSION-01-hash.png"
 
 say "shot 2: verification, all OK"
 drive "click UI element 4 of g
@@ -106,7 +115,7 @@ drive "click UI element 4 of g
   click UI element 5 of g"
 sleep 7; dismiss
 say "  $(status)"
-shot "shot2-verify-ok-1440x900.png"
+shot "filehasher-$VERSION-02-verify-ok.png"
 
 say "shot 3: one file tampered"
 python3 - "$DEMO/Documents/notes.txt" <<'PY'
@@ -122,16 +131,16 @@ drive "click UI element 4 of g
   click UI element 5 of g"
 sleep 7; dismiss
 say "  $(status)"
-shot "shot3-verify-mismatch-1440x900.png"
+shot "filehasher-$VERSION-03-verify-mismatch.png"
 
-say "done; review $OUT/shot*.png before committing"
+say "done; review $OUT before committing"
 
 # App Store Connect rejects screenshots that carry an alpha channel ("the
 # screenshot couldn't be saved"), and screencapture always produces RGBA tagged
 # with the capture display's ICC profile, not sRGB. Normalise every shot before
 # it is uploaded: convert the colour to sRGB, then drop the alpha channel. The
 # alpha is fully opaque, so dropping it changes nothing visually.
-for f in "$OUTDIR"/shot*.png; do
+for f in "$OUT"/filehasher-"$VERSION"-*.png; do
   sips --matchTo '/System/Library/ColorSync/Profiles/sRGB Profile.icc' "$f" --out "$f.srgb.png" >/dev/null
   ffmpeg -v error -y -i "$f.srgb.png" -pix_fmt rgb24 "$f"
   rm -f "$f.srgb.png"

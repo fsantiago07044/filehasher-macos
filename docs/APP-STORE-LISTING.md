@@ -127,13 +127,36 @@ The file and folder pickers now open at the path already in the box instead of w
 - SKU suggestion: `filehasher-macos`
 - Pricing: **Free** (price tier 0 in all territories)
 
-## Screenshots (docs/app-store/)
+## Screenshots
+
+Kept **per release**, in `docs/app-store/<version>/`, so an older listing's shots
+stay retrievable rather than being overwritten. The loose `shot*-1440x900.png`
+files at the top of `docs/app-store/` are the pre-1.1.0 set and are left in place.
+
+Current set, 1.1.0 (`docs/app-store/1.1.0/`):
 
 | File | Shows |
 | --- | --- |
-| `shot1-hash-1440x900.png` | Folder hash with subfolders included and metadata, completed run |
-| `shot2-verify-ok-1440x900.png` | One-pass verification, all green |
-| `shot3-verify-mismatch-1440x900.png` | Tamper detection; one file flagged MISMATCH |
+| `filehasher-1.1.0-01-hash.png` | Folder hash with subfolders included and metadata, completed run |
+| `filehasher-1.1.0-02-verify-ok.png` | One-pass verification, all green |
+| `filehasher-1.1.0-03-verify-mismatch.png` | Tamper detection; one file flagged MISMATCH |
 
-Upload order suggestion: 1 → 3 → 2 (lead with the everyday view, follow with the
-payoff, close with the all-clear).
+Upload order suggestion: 01 → 03 → 02 (lead with the everyday view, follow with
+the payoff, close with the all-clear).
+
+**Two upload traps, both hit on 1.1.0:**
+
+- **Names must differ from the previous release's.** App Store Connect copies the
+  previous version's screenshots into a new version record, and uploading a file
+  whose name matches one already in the set fails with "the screenshot couldn't
+  be saved". Version-stamped names avoid it; the old shots still need deleting
+  from the set afterwards, or the listing shows six.
+- **No alpha channel, and sRGB.** `screencapture` emits RGBA tagged with the
+  capture display's ICC profile. An alpha channel is a documented cause of the
+  same "couldn't be saved" error. The capture script now normalises its own
+  output, so this only needs checking if shots are produced some other way:
+  `sips -g hasAlpha -g profile <file>` must say `no` and `sRGB IEC61966-2.1`.
+
+Deleting screenshots or editing listing metadata through the API needs an **App
+Manager** key; the Bitwarden key is Developer role, which can read metadata and
+upload builds but returns 403 on metadata writes.
