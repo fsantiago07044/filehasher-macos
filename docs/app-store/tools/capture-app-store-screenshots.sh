@@ -125,3 +125,15 @@ say "  $(status)"
 shot "shot3-verify-mismatch-1440x900.png"
 
 say "done; review $OUT/shot*.png before committing"
+
+# App Store Connect rejects screenshots that carry an alpha channel ("the
+# screenshot couldn't be saved"), and screencapture always produces RGBA tagged
+# with the capture display's ICC profile, not sRGB. Normalise every shot before
+# it is uploaded: convert the colour to sRGB, then drop the alpha channel. The
+# alpha is fully opaque, so dropping it changes nothing visually.
+for f in "$OUTDIR"/shot*.png; do
+  sips --matchTo '/System/Library/ColorSync/Profiles/sRGB Profile.icc' "$f" --out "$f.srgb.png" >/dev/null
+  ffmpeg -v error -y -i "$f.srgb.png" -pix_fmt rgb24 "$f"
+  rm -f "$f.srgb.png"
+  printf '  normalised %s (%s)\n' "$(basename "$f")" "$(sips -g hasAlpha -g profile "$f" | tr -d '\n' | sed 's/  */ /g')"
+done
