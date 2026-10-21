@@ -5,6 +5,15 @@ Note: Fabian edited the description and related text in App Store Connect to rem
 em dashes (replaced with semicolons or commas). This doc reflects that style; the
 live App Store Connect record is the source of truth for the final wording.
 
+**The two drift.** On 2026-10-21 the live description still read "with optional
+subfolder recursion" while this file had been updated months earlier, so the repo
+copy was not what customers were reading. Before editing the description, pull the
+live text rather than trusting this file, and paste the result back here so they
+match. The API path is
+`GET /v1/appStoreVersions/<id>/appStoreVersionLocalizations`; the version ids come
+from `GET /v1/apps/6802073927/appStoreVersions`. The description is version-bound,
+so it can only change as part of a submission, unlike promotional text.
+
 Screenshot originals live in `docs/app-store/` (1440×900, an accepted Mac size).
 
 ## Name
@@ -25,7 +34,7 @@ Primary: **Utilities** · Secondary (optional): **Developer Tools**
 FileHasher computes cryptographic hashes for your files and folders, writes standard sidecar hash files next to them, and verifies everything later, so you can prove a download, an installer, a backup, or an archive hasn't changed since you hashed it.
 
 HASH
-• Hash a single file or a folder of files, scanning the folder alone or to any subfolder depth
+• Hash a single file or a folder of files, scanning the folder alone, every subfolder, or a set number of levels deep
 • Optionally limit a folder scan to file types you choose (pkg, dmg, zip, and more)
 • Four algorithms: MD5, SHA-1, SHA-256, and SHA-512
 • Drag and drop a file or folder straight onto the window
@@ -50,9 +59,9 @@ EXPORT AND RECORD
 PRIVATE BY DESIGN
 FileHasher collects nothing and sends nothing. There are no analytics, no accounts, and no network connections; everything happens locally, inside the macOS App Sandbox.
 
-FileHasher is a universal app, running natively on both Apple Silicon and Intel Macs.
-
 FileHasher for macOS shares its lineage with FileHasher for Windows; sidecar files and CSV exports made on either platform verify cleanly on the other.
+
+FileHasher is a universal app, running natively on both Apple Silicon and Intel Macs.
 ```
 
 ## Promotional text (max 170 characters, editable without review)
