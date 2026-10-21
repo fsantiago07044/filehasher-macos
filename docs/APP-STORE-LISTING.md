@@ -30,6 +30,7 @@ HASH
 • Four algorithms: MD5, SHA-1, SHA-256, and SHA-512
 • Drag and drop a file or folder straight onto the window
 • Optional size and last-modified metadata alongside every hash
+• Your algorithm and metadata choices are remembered between launches; the options that write files always start off
 
 SIDECAR HASH FILES
 • Write a sidecar (for example "report.pdf.sha256") next to each hashed file
@@ -56,18 +57,41 @@ FileHasher for macOS shares its lineage with FileHasher for Windows; sidecar fil
 
 ## Promotional text (max 170 characters, editable without review)
 
-Current (while 1.0.0 is the live version):
-`Hash files and folders, write standard sidecar checksums, and verify them any time; private by design, with no network access at all.` *(134 chars)*
+Promo text changes the live listing **instantly, without review**, so it must
+never describe a build that has not shipped yet. Set it only once the matching
+version is live.
 
-Swap in AFTER 1.0.1 is released (promo text changes the live listing instantly,
-so don't claim universal before the universal build ships):
+Live since 1.0.1 shipped (2026-08-25):
 `Now universal: runs natively on Apple Silicon and Intel Macs. Hash, sidecar, and verify your files; private by design, no network access at all.` *(144 chars)*
+
+Swap in once **1.1.0** is approved:
+`Choose how deep a folder scan goes, down to a set number of levels. Hash, sidecar, and verify your files; private by design, no network access at all.` *(150 chars)*
+
+Superseded, kept for the record (pre-1.0.1, before the universal build):
+`Hash files and folders, write standard sidecar checksums, and verify them any time; private by design, with no network access at all.` *(133 chars)*
 
 ## Keywords (max 100 characters)
 
 `hash,checksum,sha256,sha512,sha1,md5,verify,integrity,sidecar,digest,csv,audit` *(78 chars; "file" and "FileHasher" are matched from the name automatically; don't waste keyword space on them)*
 
 ## What's New
+
+Note the App Store edition went **1.0.1 to 1.1.0**: there was no 1.0.2 on the
+store, since that release was the Standalone edition's debut and changed nothing
+in the app itself. So 1.1.0's What's New covers everything since 1.0.1.
+
+1.1.0:
+
+```text
+SUBFOLDER DEPTH
+The Include subfolders checkbox is now a Subfolders control. Scan just the folder you picked, which is still the default, every subfolder beneath it, or a set number of levels deep. Verify Sidecars uses the same depth as hashing, so a verification pass can never report files as missing a sidecar simply because it did not look that far.
+
+PREFERENCES ARE REMEMBERED
+Your hash algorithm and the Include file metadata option are now remembered between launches. The options that write files, sidecar hash files and CSV export, deliberately start switched off every time, so a run only ever creates files because you asked it to in that session.
+
+BROWSE PANELS OPEN WHERE YOU ARE
+The file and folder pickers now open at the path already in the box instead of wherever the system last left them, and the CSV panel keeps the filename you chose. A path that no longer exists falls back to the nearest folder that does.
+```
 
 1.0.1: `Now a universal app: runs natively on Apple Silicon and Intel Macs. Adds a built-in help guide (Help menu, Cmd-?) covering every feature.`
 
