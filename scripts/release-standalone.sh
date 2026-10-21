@@ -5,7 +5,8 @@
 # EdDSA-sign for Sparkle -> sha256 sidecars -> GitHub release -> appcast entry.
 #
 # Prerequisites (one-time, already provisioned):
-#   - Developer ID Application certificate in the login keychain
+#   - Developer ID Application certificate in the login keychain, issued by the
+#     G2 authority (the original Developer ID Sub-CA expires 2027-02-01)
 #   - notarytool keychain profile:  filehasher-notary
 #   - Sparkle EdDSA private key in the login keychain (backup in Bitwarden:
 #     "FileHasher Sparkle EdDSA private key")
@@ -54,6 +55,78 @@ fi
 
 rm -rf "$WORK" && mkdir -p "$WORK"
 
+echo "==> Resolving Developer ID signing identity"
+# Apple's original "Developer ID Certification Authority" expires 2027-02-01 and
+# takes every certificate it issued with it, so a release must be signed by a
+# certificate from the G2 authority. Both authorities issue certificates with
+# the identical common name, and `codesign -s <name>` refuses an ambiguous
+# match, so resolve to a SHA-1 hash and check the issuer rather than trusting
+# the name. Already-released builds are unaffected: they carry a secure
+# timestamp and a stapled notarization ticket, which is what keeps them
+# installable after the authority expires.
+DEVID_CN="Developer ID Application: Fabian Santiago (49KP5XUP9W)"
+CERT_DUMP="$WORK/devid-certs.pem"
+security find-certificate -a -Z -c "$DEVID_CN" -p > "$CERT_DUMP"
+
+IDENTITY=""
+G2_EXPIRY=""
+G2_EPOCH=0
+OLD_CA_EXPIRY=""
+SHA1=""
+PEM=""
+while IFS= read -r line; do
+  case "$line" in
+    "SHA-1 hash: "*)
+      SHA1="${line#SHA-1 hash: }"
+      PEM=""
+      ;;
+    "-----BEGIN CERTIFICATE-----")
+      PEM="$line"
+      ;;
+    "-----END CERTIFICATE-----")
+      PEM="$PEM
+$line"
+      if print -r -- "$PEM" | openssl x509 -noout -checkend 0 >/dev/null 2>&1; then
+        ISSUER=$(print -r -- "$PEM" | openssl x509 -noout -issuer 2>/dev/null)
+        ENDS=$(print -r -- "$PEM" | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+        case "$ISSUER" in
+          *"OU=G2"*|*"OU = G2"*)
+            # Renewal leaves two valid G2 certificates overlapping for a while;
+            # take the one that lasts longest.
+            EPOCH=$(date -j -f "%b %e %T %Y %Z" "$ENDS" "+%s" 2>/dev/null || echo 0)
+            if [ "$EPOCH" -ge "$G2_EPOCH" ]; then
+              IDENTITY="$SHA1"; G2_EXPIRY="$ENDS"; G2_EPOCH="$EPOCH"
+            fi
+            ;;
+          *) OLD_CA_EXPIRY="$ENDS" ;;
+        esac
+      fi
+      PEM=""
+      ;;
+    *)
+      [ -n "$PEM" ] && PEM="$PEM
+$line"
+      ;;
+  esac
+done < "$CERT_DUMP"
+
+if [ -z "$IDENTITY" ]; then
+  echo "ERROR: no valid Developer ID Application certificate from the G2 authority." >&2
+  [ -n "$OLD_CA_EXPIRY" ] && \
+    echo "       The one in the keychain is from the original Sub-CA and dies $OLD_CA_EXPIRY." >&2
+  cat >&2 <<'MSG'
+
+       Create a replacement before signing anything new:
+         developer.apple.com > Certificates, Identifiers & Profiles > +
+           > Developer ID Application
+           > when asked for the intermediary, choose "G2 Sub-CA"
+       or Xcode > Settings > Accounts > Manage Certificates > + .
+       Leave the old certificate in the keychain; do not revoke it.
+MSG
+  exit 1
+fi
+echo "    $IDENTITY (G2 authority, expires $G2_EXPIRY)"
+
 echo "==> Building (Release, universal, hermetic DerivedData)"
 # We deliberately do NOT use xcodebuild archive/-exportArchive here: archiving
 # an app that embeds a signed binary xcframework (Sparkle via SPM) trips an
@@ -75,7 +148,6 @@ rm -rf "$APP" && ditto "$APP_SRC" "$APP"
 xattr -cr "$APP"
 
 echo "==> Signing with Developer ID (inside-out)"
-IDENTITY="Developer ID Application: Fabian Santiago (49KP5XUP9W)"
 FW="$APP/Contents/Frameworks/Sparkle.framework"
 codesign -f -s "$IDENTITY" -o runtime --preserve-metadata=entitlements "$FW/Versions/B/XPCServices/Downloader.xpc"
 codesign -f -s "$IDENTITY" -o runtime --preserve-metadata=entitlements "$FW/Versions/B/XPCServices/Installer.xpc"
@@ -85,7 +157,11 @@ codesign -f -s "$IDENTITY" -o runtime "$FW"
 codesign -f -s "$IDENTITY" -o runtime \
   --entitlements "$REPO_ROOT/FileHasher/FileHasher-Standalone.entitlements" "$APP"
 codesign --verify --strict --deep "$APP" && echo "    deep signature verified"
-codesign -dvv "$APP" 2>&1 | grep "Authority=Developer ID Application" | head -1
+codesign -dvvv "$APP" 2>&1 | grep -E "^Authority=Developer ID"
+# A secure timestamp is what lets a signature outlive its issuing authority,
+# and notarization rejects submissions without one. Catch it here, not there.
+codesign -dvvv "$APP" 2>&1 | grep -q "^Timestamp=" \
+  || { echo "ERROR: signature carries no secure timestamp" >&2; exit 1; }
 
 echo "==> Verifying universal binary and Sparkle presence"
 lipo -archs "$APP/Contents/MacOS/FileHasher" | grep -q "x86_64 arm64" || { echo "not universal" >&2; exit 1; }

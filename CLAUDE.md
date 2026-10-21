@@ -101,6 +101,17 @@ differ. See "Parity with the Windows app" below.
   Release build plus manual inside-out Developer ID signing, then `notarytool`
   with the `filehasher-notary` keychain profile. Do not "modernise" it to
   archive-based export.
+- **Developer ID signing moved to the G2 authority.** Apple's original
+  `Developer ID Certification Authority` expires **2027-02-01** and every
+  certificate it issued dies with it, whatever the certificate's own end date
+  says. Shipped builds are fine (secure timestamp plus stapled ticket), no
+  `.pkg` is distributed, and the App Store edition signs with a different
+  authority, so the only thing affected is signing a NEW Standalone release.
+  The release script resolves the identity by SHA-1 hash and refuses to run
+  without a G2 certificate; do not "fix" that by hardcoding the common name
+  again, because two certificates share it and `codesign -s <name>` then fails
+  as ambiguous. Never revoke the old certificate. Full writeup in
+  `docs/RELEASING.md`.
 - The App Store edition ships separately; `docs/APP-STORE-SUBMISSION.md`,
   `docs/APP-STORE-LISTING.md` and `docs/APP-REVIEW-NOTES.md` cover it.
   `APP-REVIEW-NOTES.md` is a record of what was submitted for a past review, so
