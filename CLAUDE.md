@@ -52,12 +52,19 @@ differ. See "Parity with the Windows app" below.
   anything project.yml does not describe. A new file that is silently missing
   from its target means `xcodegen generate` has not been run, not that four
   entries need writing by hand. Verify either way with the `nm` check below.
-- **Every build rewrites `project.pbxproj`**, renaming the Standalone target's
-  `productReference` from `FileHasher-Standalone.app` to `FileHasher.app`. It is
-  cosmetic and safe to discard: both targets set `PRODUCT_NAME = FileHasher` and
-  are separated by `CONFIGURATION_BUILD_DIR` (`$(CONFIGURATION)-standalone`),
-  which is why the release script collects `Release-standalone/FileHasher.app`.
-  Check the diff before committing so a real change is not lost in the noise.
+- **Every build rewrites `project.pbxproj` AND the Standalone scheme**, and
+  `xcodegen generate` writes them back the other way, so the pair flip-flops:
+  xcodegen produces scheme format 1.7 with `BuildableName =
+  FileHasher-Standalone.app`, and any `xcodebuild` run rewrites it to 1.3 with
+  `FileHasher.app`, matching how it renames the target's `productReference`.
+  Both forms build correctly, including the Standalone release, so this is
+  cosmetic and safe to discard in either direction: both targets set
+  `PRODUCT_NAME = FileHasher` and are separated by `CONFIGURATION_BUILD_DIR`
+  (`$(CONFIGURATION)-standalone`), which is why the release script collects
+  `Release-standalone/FileHasher.app`. `BuildableName` is a scheme hint and does
+  not name the built product. Check the diff before committing so a real change
+  is not lost in the noise, and expect this churn to ride along in unrelated
+  commits unless you reset it.
 
 ## Tests
 
