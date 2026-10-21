@@ -116,12 +116,18 @@ if [ -z "$IDENTITY" ]; then
     echo "       The one in the keychain is from the original Sub-CA and dies $OLD_CA_EXPIRY." >&2
   cat >&2 <<'MSG'
 
-       Create a replacement before signing anything new:
+       Create a replacement before signing anything new, using the WEB PORTAL:
          developer.apple.com > Certificates, Identifiers & Profiles > +
            > Developer ID Application
-           > when asked for the intermediary, choose "G2 Sub-CA"
-       or Xcode > Settings > Accounts > Manage Certificates > + .
-       Leave the old certificate in the keychain; do not revoke it.
+           > choose the "G2 Sub-CA" intermediate, then upload a CSR from
+             Keychain Access > Certificate Assistant > Request a Certificate
+             From a Certificate Authority (saved to disk)
+
+       Do NOT use Xcode > Settings > Accounts > Manage Certificates for this.
+       Xcode 16.4 never asks which intermediate to use and silently issues from
+       the dying authority (confirmed 2026-10-21, one wasted certificate slot).
+
+       Leave the old certificates in the keychain; do not revoke them.
 MSG
   exit 1
 fi

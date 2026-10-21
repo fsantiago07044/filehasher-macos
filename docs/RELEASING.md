@@ -54,12 +54,21 @@ What this does and does not affect here:
   notice does not apply; the Standalone edition ships as a notarized `.zip`.
 - **The App Store edition is untouched.** It signs with Apple Distribution,
   issued by a different authority.
-- **Future Standalone releases need a G2 certificate.** Create one at
-  developer.apple.com (Certificates, Identifiers & Profiles > + > Developer ID
-  Application), and when prompted for the intermediary choose **G2 Sub-CA**;
-  anything else reissues from the dying authority. Xcode > Settings > Accounts >
-  Manage Certificates does the same thing. **Leave the old certificate in the
-  keychain and do not revoke it**, so existing signatures stay verifiable.
+- **Standalone releases need a G2 certificate.** Provisioned 2026-10-21: SHA-1
+  `2D970B18FB9D8A5EBD9FD2996C6254AFFE948CFA`, expiring **2027-11-20**. G2 leaf
+  certificates expire annually rather than every five years, so this is now a
+  yearly errand.
+- **Renew through the web portal, never through Xcode.** developer.apple.com >
+  Certificates, Identifiers & Profiles > + > Developer ID Application, choose
+  the **G2 Sub-CA** intermediate, then upload a CSR from Keychain Access >
+  Certificate Assistant > Request a Certificate From a Certificate Authority
+  (saved to disk). **Xcode > Settings > Accounts > Manage Certificates never
+  asks which intermediate to use**: on 16.4 it silently issued from the dying
+  authority, which cost a certificate slot on 2026-10-21. The portal is the only
+  route that exposes the choice.
+- **Leave the old certificates in the keychain and do not revoke them.**
+  `487FFC51...` signed the shipped 1.0.2; revoking it is the one action that
+  could break software already installed.
 
 `scripts/release-standalone.sh` enforces this. It resolves the signing identity
 by SHA-1 hash rather than by name, refuses to build if the only valid Developer

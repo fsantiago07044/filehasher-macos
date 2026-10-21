@@ -107,11 +107,18 @@ differ. See "Parity with the Windows app" below.
   says. Shipped builds are fine (secure timestamp plus stapled ticket), no
   `.pkg` is distributed, and the App Store edition signs with a different
   authority, so the only thing affected is signing a NEW Standalone release.
-  The release script resolves the identity by SHA-1 hash and refuses to run
-  without a G2 certificate; do not "fix" that by hardcoding the common name
-  again, because two certificates share it and `codesign -s <name>` then fails
-  as ambiguous. Never revoke the old certificate. Full writeup in
-  `docs/RELEASING.md`.
+  A G2 certificate was provisioned 2026-10-21 (SHA-1 `2D970B18...`, expiring
+  2027-11-20; G2 leaves renew annually, not every five years). The release
+  script resolves the identity by SHA-1 hash and refuses to run without a G2
+  certificate; do not "fix" that by hardcoding the common name again, because
+  three certificates now share that name and `codesign -s <name>` fails as
+  ambiguous, verified. Never revoke the old ones: `487FFC51...` signed the
+  shipped 1.0.2.
+- **Renew Developer ID certificates through the web portal, never Xcode.**
+  Xcode 16.4's Manage Certificates sheet never asks which intermediate to use
+  and silently issues from the dying authority; that cost a certificate slot on
+  2026-10-21. Only developer.apple.com exposes the G2 Sub-CA choice, and it
+  wants a CSR from Keychain Access. Full writeup in `docs/RELEASING.md`.
 - The App Store edition ships separately; `docs/APP-STORE-SUBMISSION.md`,
   `docs/APP-STORE-LISTING.md` and `docs/APP-REVIEW-NOTES.md` cover it.
   `APP-REVIEW-NOTES.md` is a record of what was submitted for a past review, so
