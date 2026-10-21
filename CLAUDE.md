@@ -152,6 +152,13 @@ differ. See "Parity with the Windows app" below.
   `docs/APP-STORE-LISTING.md` and `docs/APP-REVIEW-NOTES.md` cover it.
   `APP-REVIEW-NOTES.md` is a record of what was submitted for a past review, so
   correct it only where it describes the app as it is today.
+- **Every release includes a store-listing review, unprompted.** Fabian should
+  never have to ask for What's New, the description, or a screenshots verdict.
+  Rebuild the description from the **live** App Store Connect record, not from
+  `docs/APP-STORE-LISTING.md`: on 2026-10-21 the live text still said "with
+  optional subfolder recursion" while the repo file had been right for months,
+  so the repo was not what customers read. Full checklist is step 5 of
+  `docs/RELEASING.md`.
 - **UI changes invalidate the App Store screenshots** (the shot list in
   `docs/APP-STORE-LISTING.md`). Raise regenerating them rather than waiting to
   be asked. The Windows repo has the same obligation for the Microsoft Store and

@@ -18,15 +18,28 @@ Two editions ship from one codebase and one version number:
    a rental if available).
 4. Tag: `git tag -s vX.Y.Z` and push with tags. The GitLab push mirror carries
    everything to GitHub automatically.
-5. **App Store edition**: archive scheme `FileHasher`, export with method
+5. **Review the store listing and hand Fabian the finished copy, unasked.**
+   Do not wait to be asked for any of it. Produce: What's New for this version
+   with its character count; the description as a **complete final value**,
+   rebuilt from the **live** App Store Connect record rather than from
+   `docs/APP-STORE-LISTING.md`, since the two drift and his console edits must
+   survive; promotional text staged but **not** applied, because it bypasses
+   review and goes live instantly; a screenshots verdict naming which shots the
+   UI change invalidated; and which build to attach if more than one was
+   uploaded. Paste the final description back into
+   `docs/APP-STORE-LISTING.md` so the repo stops diverging. The description is
+   version-bound, so a submission is the only chance to change it. Mind version
+   gaps: the store went 1.0.1 to 1.1.0 with no 1.0.2, so that What's New had to
+   cover two releases.
+6. **App Store edition**: archive scheme `FileHasher`, export with method
    `app-store-connect` (destination upload), then attach the build and submit
    in App Store Connect.
-6. **Standalone edition**: `scripts/release-standalone.sh` does everything
+7. **Standalone edition**: `scripts/release-standalone.sh` does everything
    (archive, Developer ID export, notarize, staple, zip, Sparkle EdDSA
    signature, sha256 sidecars, GitHub release) and prints the appcast `<item>`.
-7. Paste that `<item>` into `appcast.xml`, commit, push. The mirror publishes
+8. Paste that `<item>` into `appcast.xml`, commit, push. The mirror publishes
    it; Sparkle clients worldwide see the update within their check interval.
-8. Update the website and write the announcement post if warranted.
+9. Update the website and write the announcement post if warranted.
 
 ## Secrets map (nothing in this repo)
 
