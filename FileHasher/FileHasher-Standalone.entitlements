@@ -11,5 +11,26 @@
 	     Store edition keeps no network entitlement at all. -->
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<!-- Sparkle's installer runs outside the app sandbox, and a sandboxed host
+	     cannot reach it without an explicit mach-lookup exception. Info.plist
+	     already sets SUEnableInstallerLauncherService; these two are the other
+	     half of that requirement, per Sparkle's sandboxing documentation.
+	     Without them an update DOWNLOADS and then fails at install, which is
+	     exactly what 1.0.2 and 1.1.0 both do.
+
+	     The bundle identifier is written out in full rather than as
+	     $(PRODUCT_BUNDLE_IDENTIFIER): scripts/release-standalone.sh passes this
+	     file straight to `codesign --entitlements`, which does NO build-setting
+	     substitution, so a variable would be embedded literally and the lookup
+	     would still be denied. A literal works for both Xcode and the script.
+
+	     These are Developer ID only. Do NOT copy them into
+	     FileHasher.entitlements: temporary exceptions invite App Review
+	     scrutiny, and the App Store edition contains no Sparkle at all. -->
+	<key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
+	<array>
+		<string>com.fabianasantiago.FileHasher-spks</string>
+		<string>com.fabianasantiago.FileHasher-spki</string>
+	</array>
 </dict>
 </plist>
