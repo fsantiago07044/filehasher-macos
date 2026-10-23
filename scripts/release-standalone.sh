@@ -178,14 +178,26 @@ codesign -f -s "$IDENTITY" -o runtime "$FW"
 codesign -f -s "$IDENTITY" -o runtime \
   --entitlements "$REPO_ROOT/FileHasher/FileHasher-Standalone.entitlements" "$APP"
 codesign --verify --strict --deep "$APP" && echo "    deep signature verified"
-codesign -dvvv "$APP" 2>&1 | grep -E "^Authority=Developer ID"
+# Capture once and test in the shell. `cmd | grep -q` under `set -o pipefail`
+# is a race: grep exits at the first match, cmd dies of SIGPIPE, and pipefail
+# reports the pipeline as failed even though the match succeeded. That falsely
+# failed the 1.1.1 release after a clean sign, and passed on 1.1.0, which is
+# exactly how an intermittent bug behaves.
+SIGINFO="$(codesign -dvvv "$APP" 2>&1)"
+print -r -- "$SIGINFO" | grep -E "^Authority=Developer ID" || true
 # A secure timestamp is what lets a signature outlive its issuing authority,
 # and notarization rejects submissions without one. Catch it here, not there.
-codesign -dvvv "$APP" 2>&1 | grep -q "^Timestamp=" \
-  || { echo "ERROR: signature carries no secure timestamp" >&2; exit 1; }
+case "$SIGINFO" in
+  *"Timestamp="*) ;;
+  *) echo "ERROR: signature carries no secure timestamp" >&2; exit 1 ;;
+esac
 
 echo "==> Verifying universal binary and Sparkle presence"
-lipo -archs "$APP/Contents/MacOS/FileHasher" | grep -q "x86_64 arm64" || { echo "not universal" >&2; exit 1; }
+ARCHS_OUT="$(lipo -archs "$APP/Contents/MacOS/FileHasher")"
+case "$ARCHS_OUT" in
+  *x86_64*arm64*|*arm64*x86_64*) ;;
+  *) echo "not universal (got: $ARCHS_OUT)" >&2; exit 1 ;;
+esac
 [ -d "$APP/Contents/Frameworks/Sparkle.framework" ] || { echo "Sparkle missing from bundle" >&2; exit 1; }
 
 # Belt and braces: strip any extended attributes before signing artifacts move on
