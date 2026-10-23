@@ -133,6 +133,21 @@ MSG
 fi
 echo "    $IDENTITY (G2 authority, expires $G2_EXPIRY)"
 
+echo "==> Validating the Standalone entitlements"
+# codesign parses entitlements with AMFI's stricter XML reader, which rejects
+# things `plutil -lint` accepts. A double hyphen inside an XML comment is
+# illegal XML and cost a whole build on 1.1.1: the failure surfaced only after
+# the Release build, as "AMFIUnserializeXML: syntax error near line N".
+ENT="$REPO_ROOT/FileHasher/FileHasher-Standalone.entitlements"
+xmllint --noout "$ENT" || { echo "ERROR: $ENT is not well-formed XML" >&2; exit 1; }
+plutil -lint "$ENT" >/dev/null || { echo "ERROR: $ENT is not a valid plist" >&2; exit 1; }
+# prove codesign itself accepts it, against a throwaway copy of a system binary
+ENTPROBE="$WORK/entitlements-probe"
+cp /bin/echo "$ENTPROBE" && xattr -cr "$ENTPROBE"
+codesign -f -s "$IDENTITY" -o runtime --entitlements "$ENT" "$ENTPROBE" 2>&1   || { echo "ERROR: codesign rejected $ENT (see the AMFI message above)" >&2; exit 1; }
+rm -f "$ENTPROBE"
+echo "    entitlements parse and sign cleanly"
+
 echo "==> Building (Release, universal, hermetic DerivedData)"
 # We deliberately do NOT use xcodebuild archive/-exportArchive here: archiving
 # an app that embeds a signed binary xcframework (Sparkle via SPM) trips an

@@ -20,7 +20,8 @@
 
 	     The bundle identifier is written out in full rather than as
 	     $(PRODUCT_BUNDLE_IDENTIFIER): scripts/release-standalone.sh passes this
-	     file straight to `codesign --entitlements`, which does NO build-setting
+	     file straight to codesign with an entitlements file, and codesign does
+	     NO build-setting
 	     substitution, so a variable would be embedded literally and the lookup
 	     would still be denied. A literal works for both Xcode and the script.
 
