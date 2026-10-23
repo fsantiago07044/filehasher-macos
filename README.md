@@ -1,17 +1,18 @@
 # FileHasher for macOS
 
-> ## ⚠️  Standalone edition: 1.1.1 must be installed by hand
+> ## ⚠️  Standalone edition: install 1.1.2 by hand, and avoid 1.1.0 / 1.1.1
 >
-> **If you run the Standalone (non-App Store) edition at 1.0.2 or 1.1.0, the in-app
-> updater cannot install the 1.1.1 update.** It downloads, then fails with *"An error
-> occurred while running the updater."*
+> **1.1.0 and 1.1.1 are withdrawn.** Both shipped as a zip that Finder cannot extract
+> into a working app: stray `._` files land inside the embedded Sparkle framework and
+> break the code signature seal, so macOS refuses to open it with *"Apple could not
+> verify FileHasher is free of malware."* The app was correctly signed and notarized;
+> the archive format was at fault. **[1.1.2](https://github.com/fsantiago07044/filehasher-macos/releases/latest)
+> ships as a DMG** and does not have the problem.
 >
-> That is the bug 1.1.1 fixes, and it cannot fix itself: the permission check that lets
-> the updater reach its installer is performed by the **running** app, so an older build
-> is stuck regardless of what the new one contains.
->
-> **Download [1.1.1](https://github.com/fsantiago07044/filehasher-macos/releases/latest)
-> and replace FileHasher.app once.** Automatic updates work normally from then on.
+> **If you are on 1.0.2, install 1.1.2 by hand.** The in-app updater cannot do it: the
+> permission check that lets the updater reach its installer is performed by the
+> **running** app, and 1.0.2 lacks it. That is the bug 1.1.2 fixes, and it cannot fix
+> itself. One-time step; automatic updates work from 1.1.2 onward.
 >
 > **Mac App Store users are unaffected** and need do nothing; that edition has no updater.
 
