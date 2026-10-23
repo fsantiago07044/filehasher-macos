@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.1, released 2026-10-22 (Standalone only; Mac App Store edition unchanged at 1.1.0)
+
+- **Automatic updates now actually install.** The Standalone edition is sandboxed,
+  and a sandboxed Sparkle host has to declare a mach-lookup exception for the
+  installer's Connection and Status services as well as setting
+  `SUEnableInstallerLauncherService`. Only the Info.plist half was present, so an
+  update would download, verify, launch the installer, and then fail with "An
+  error occurred while running the updater" when the app tried to talk to the
+  installer it had just started. Sparkle names this case explicitly in its own
+  diagnostics. **1.0.2 was the Standalone debut, so 1.1.0 was the first update
+  anyone could attempt, and it was the one that found this.**
+- **Existing users must install this one by hand.** The mach lookup is performed
+  by the *running* app, so 1.0.2 and 1.1.0 cannot update themselves to the fix no
+  matter what the new build contains. Download 1.1.1 from the GitHub release and
+  replace the app once; automatic updates work from then on.
+- Nothing else changed. The App Store edition contains no Sparkle and is
+  unaffected, so it stays at 1.1.0 rather than going through review for a fix
+  that cannot apply to it.
+
 ## 1.1.0, released 2026-10-21 (Standalone, GitHub; Mac App Store edition submitted for review)
 
 - **Subfolders depth control**, replacing the *Include subfolders* checkbox. Choose
