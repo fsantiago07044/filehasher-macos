@@ -213,7 +213,40 @@ xcrun stapler staple "$APP" | tail -1
 spctl --assess --type execute -v "$APP" 2>&1 | tail -1
 
 echo "==> Building distribution zip"
+# `xattr -cr` acts on what a symlink POINTS AT, never on the link itself, so
+# every symlink in Sparkle.framework kept its com.apple.provenance attribute.
+# ditto stores those in the archive; Archive Utility, which is what Finder uses,
+# cannot set xattrs on a symlink and writes AppleDouble "._Name" sidecars beside
+# them instead. Those land in the framework's ROOT, which is sealed, so the app
+# a normal user extracts is rejected: "unsealed contents present in the root
+# directory of an embedded framework". The zip verifies perfectly if you extract
+# it with ditto, which is why 1.1.1 shipped broken. -s acts on the link itself.
+find "$APP" -type l -print0 | xargs -0 xattr -c -s 2>/dev/null || true
+LINKX=$(find "$APP" -type l -exec xattr -s -l {} \; 2>/dev/null | wc -l | tr -d ' ')
+[ "$LINKX" = "0" ] || { echo "ERROR: $LINKX xattr(s) still on symlinks; the zip would break Finder extraction" >&2; exit 1; }
 ditto -c -k --keepParent "$APP" "$ZIP"
+
+echo "==> Verifying the zip the way a USER opens it (Archive Utility, not ditto)"
+# The whole point: ditto round-trips its own archives correctly, so testing with
+# ditto proves nothing about what a user gets. Extract with Archive Utility and
+# assess the result, or this class of packaging bug ships again.
+AUDIR="$WORK/finder-extract"
+rm -rf "$AUDIR" && mkdir -p "$AUDIR"
+ditto "$ZIP" "$AUDIR/$(basename "$ZIP")"
+open -W -a "/System/Library/CoreServices/Applications/Archive Utility.app" "$AUDIR/$(basename "$ZIP")"
+AUAPP="$AUDIR/FileHasher.app"
+[ -d "$AUAPP" ] || { echo "ERROR: Archive Utility produced no FileHasher.app in $AUDIR" >&2; exit 1; }
+STRAY=$(find "$AUAPP" -name "._*" | wc -l | tr -d ' ')
+[ "$STRAY" = "0" ] || {
+  echo "ERROR: Archive Utility extraction left $STRAY AppleDouble file(s); the bundle seal is broken:" >&2
+  find "$AUAPP" -name "._*" >&2
+  exit 1; }
+codesign --verify --strict --deep "$AUAPP" \
+  || { echo "ERROR: the Finder-extracted app fails codesign verification" >&2; exit 1; }
+spctl --assess --type execute "$AUAPP" \
+  || { echo "ERROR: the Finder-extracted app is rejected by Gatekeeper" >&2; exit 1; }
+echo "    Finder-extracted app verifies and Gatekeeper accepts it"
+rm -rf "$AUDIR"
 
 echo "==> Sparkle EdDSA signature"
 SIGN_OUT=$("$SPARKLE_BIN/sign_update" "$ZIP")
