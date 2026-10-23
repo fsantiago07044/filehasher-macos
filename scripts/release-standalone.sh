@@ -228,7 +228,15 @@ for f in "$ZIP"; do
 done
 
 echo "==> GitHub release"
-NOTES=$(awk "/^## ${VERSION}/,/^## [0-9]/" CHANGELOG.md | sed '$d' | tail -n +2)
+# A /start/,/end/ range in awk tests the end pattern on the START line too, and
+# the heading "## 1.1.1, released ..." matches /^## [0-9]/ itself, so the range
+# collapsed to that one line and every release since the Standalone debut got
+# the "See CHANGELOG.md." fallback instead of its notes. Walk it with a flag.
+NOTES=$(awk -v v="$VERSION" '
+  !inb && $0 ~ "^## " v "([,.[:space:]]|$)" { inb=1; next }
+  inb && /^## [0-9]/ { exit }
+  inb { print }
+' CHANGELOG.md)
 gh release create "$TAG" \
   --repo fsantiago07044/filehasher-macos \
   --title "FileHasher ${VERSION}" \

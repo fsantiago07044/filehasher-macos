@@ -1,5 +1,20 @@
 # FileHasher for macOS
 
+> ## ⚠️  Standalone edition: 1.1.1 must be installed by hand
+>
+> **If you run the Standalone (non-App Store) edition at 1.0.2 or 1.1.0, the in-app
+> updater cannot install the 1.1.1 update.** It downloads, then fails with *"An error
+> occurred while running the updater."*
+>
+> That is the bug 1.1.1 fixes, and it cannot fix itself: the permission check that lets
+> the updater reach its installer is performed by the **running** app, so an older build
+> is stuck regardless of what the new one contains.
+>
+> **Download [1.1.1](https://github.com/fsantiago07044/filehasher-macos/releases/latest)
+> and replace FileHasher.app once.** Automatic updates work normally from then on.
+>
+> **Mac App Store users are unaffected** and need do nothing; that edition has no updater.
+
 A utility to hash files and folders, write sidecar hash files, verify them later, and export results to CSV.
 
 > **Derived from [FileHasher for Windows](https://github.com/fsantiago07044/filehasher).**
