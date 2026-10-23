@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.2, released 2026-10-22 (Standalone only; Mac App Store edition unchanged at 1.1.0)
+
+- **Ships as a DMG, and installs correctly.** 1.1.0 and 1.1.1 were distributed as
+  a zip, and both are **withdrawn**: extracting them in Finder left stray `._`
+  files inside the embedded Sparkle framework, breaking the code signature seal,
+  and macOS refused to open the app with *"Apple could not verify FileHasher is
+  free of malware."* The cause was extended attributes on the framework's
+  symlinks, which `ditto` stores in the archive and which Archive Utility cannot
+  reapply to a symlink, so it writes AppleDouble sidecars instead. The app was
+  correctly signed and notarized throughout; only the archive format failed, and
+  only when extracted the way users actually extract it. A DMG is a filesystem
+  image, so symlinks and their attributes are stored natively.
+- **The 1.1.1 updater fix is included**, unchanged: the Sparkle installer
+  entitlements a sandboxed host needs. See 1.1.1 below for the detail.
+- **Install this one by hand.** Anyone on 1.0.2 still cannot auto-update, because
+  the permission check is performed by the running app. This remains a one-time
+  manual step; automatic updates work from 1.1.2 onward.
+- No code changes from 1.1.1. This is a packaging release.
+
 ## 1.1.1, released 2026-10-22 (Standalone only; Mac App Store edition unchanged at 1.1.0)
 
 - **Automatic updates now actually install.** The Standalone edition is sandboxed,

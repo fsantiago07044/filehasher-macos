@@ -2,7 +2,8 @@
 # Release the Standalone (Sparkle) edition of FileHasher.
 #
 # Pipeline: archive (Developer ID) -> export -> notarize -> staple -> zip ->
-# EdDSA-sign for Sparkle -> sha256 sidecars -> GitHub release -> appcast entry.
+# build DMG -> notarize+staple it -> verify a real install -> EdDSA-sign for
+# Sparkle -> sha256 sidecar -> GitHub release -> appcast entry.
 #
 # Prerequisites (one-time, already provisioned):
 #   - Developer ID Application certificate in the login keychain, issued by the
@@ -39,7 +40,7 @@ TAG="v${VERSION}"
 WORK="${TMPDIR:-/tmp}/filehasher-release-work"
 ARCHIVE="$WORK/FileHasher-Standalone.xcarchive"
 EXPORT_DIR="$WORK/export"
-ZIP="$WORK/FileHasher-${VERSION}.zip"
+DMG="$WORK/FileHasher-${VERSION}.dmg"
 
 echo "==> Releasing FileHasher Standalone ${VERSION} (build ${BUILD}), tag ${TAG}"
 echo "==> Work dir: $WORK"
@@ -212,53 +213,74 @@ echo "==> Stapling ticket"
 xcrun stapler staple "$APP" | tail -1
 spctl --assess --type execute -v "$APP" 2>&1 | tail -1
 
-echo "==> Building distribution zip"
-# `xattr -cr` acts on what a symlink POINTS AT, never on the link itself, so
-# every symlink in Sparkle.framework kept its com.apple.provenance attribute.
-# ditto stores those in the archive; Archive Utility, which is what Finder uses,
-# cannot set xattrs on a symlink and writes AppleDouble "._Name" sidecars beside
-# them instead. Those land in the framework's ROOT, which is sealed, so the app
-# a normal user extracts is rejected: "unsealed contents present in the root
-# directory of an embedded framework". The zip verifies perfectly if you extract
-# it with ditto, which is why 1.1.1 shipped broken. -s acts on the link itself.
-find "$APP" -type l -print0 | xargs -0 xattr -c -s 2>/dev/null || true
-LINKX=$(find "$APP" -type l -exec xattr -s -l {} \; 2>/dev/null | wc -l | tr -d ' ')
-[ "$LINKX" = "0" ] || { echo "ERROR: $LINKX xattr(s) still on symlinks; the zip would break Finder extraction" >&2; exit 1; }
-ditto -c -k --keepParent "$APP" "$ZIP"
+echo "==> Building the DMG"
+# A DMG, not a zip, and this is not cosmetic. `ditto -c -k` stores the
+# extended attributes that sit on Sparkle.framework's symlinks; Archive
+# Utility, which is what Finder uses, cannot set xattrs on a symlink and writes
+# AppleDouble "._Name" sidecars beside them instead. Those land in the
+# framework's sealed root, so the app a normal user extracts is rejected with
+# "unsealed contents present in the root directory of an embedded framework".
+# That shipped in 1.1.0 and 1.1.1, both withdrawn. A DMG is a filesystem image:
+# symlinks and xattrs are stored natively and there is no AppleDouble step.
+STAGE="$WORK/dmg-stage"
+rm -rf "$STAGE" && mkdir -p "$STAGE"
+ditto "$APP" "$STAGE/FileHasher.app"
+ln -s /Applications "$STAGE/Applications"
+rm -f "$DMG"
+hdiutil create -volname "FileHasher ${VERSION}" -srcfolder "$STAGE" \
+  -ov -format UDZO -fs HFS+ "$DMG" >/dev/null
+codesign -f -s "$IDENTITY" "$DMG"
 
-echo "==> Verifying the zip the way a USER opens it (Archive Utility, not ditto)"
-# The whole point: ditto round-trips its own archives correctly, so testing with
-# ditto proves nothing about what a user gets. Extract with Archive Utility and
-# assess the result, or this class of packaging bug ships again.
-AUDIR="$WORK/finder-extract"
-rm -rf "$AUDIR" && mkdir -p "$AUDIR"
-ditto "$ZIP" "$AUDIR/$(basename "$ZIP")"
-open -W -a "/System/Library/CoreServices/Applications/Archive Utility.app" "$AUDIR/$(basename "$ZIP")"
-AUAPP="$AUDIR/FileHasher.app"
-[ -d "$AUAPP" ] || { echo "ERROR: Archive Utility produced no FileHasher.app in $AUDIR" >&2; exit 1; }
-STRAY=$(find "$AUAPP" -name "._*" | wc -l | tr -d ' ')
-[ "$STRAY" = "0" ] || {
-  echo "ERROR: Archive Utility extraction left $STRAY AppleDouble file(s); the bundle seal is broken:" >&2
-  find "$AUAPP" -name "._*" >&2
-  exit 1; }
-codesign --verify --strict --deep "$AUAPP" \
-  || { echo "ERROR: the Finder-extracted app fails codesign verification" >&2; exit 1; }
-spctl --assess --type execute "$AUAPP" \
-  || { echo "ERROR: the Finder-extracted app is rejected by Gatekeeper" >&2; exit 1; }
-echo "    Finder-extracted app verifies and Gatekeeper accepts it"
-rm -rf "$AUDIR"
+echo "==> Notarizing the DMG (this waits for Apple)"
+# The app inside is already notarized and stapled, which is what keeps it valid
+# offline once it is dragged out. The DMG needs its own ticket too, or opening
+# the download is itself blocked.
+xcrun notarytool submit "$DMG" --keychain-profile filehasher-notary --wait | tail -3
+xcrun stapler staple "$DMG" | tail -1
+xcrun stapler validate "$DMG" >/dev/null || { echo "ERROR: DMG ticket does not validate" >&2; exit 1; }
+
+echo "==> Verifying the DMG the way a USER installs it"
+# Mount it, drag the app out, and assess that copy. Verifying the build
+# directory proves nothing about what a user ends up with; that mistake is what
+# let 1.1.0 and 1.1.1 ship broken.
+MP=$(hdiutil attach "$DMG" -nobrowse -readonly | awk -F'\t' '/Volumes/{print $NF}' | tail -1)
+[ -d "$MP/FileHasher.app" ] || { hdiutil detach "$MP" >/dev/null 2>&1; echo "ERROR: no FileHasher.app in the mounted DMG" >&2; exit 1; }
+INST="$WORK/dmg-installed"
+rm -rf "$INST" && mkdir -p "$INST"
+ditto "$MP/FileHasher.app" "$INST/FileHasher.app"
+hdiutil detach "$MP" >/dev/null
+STRAY=$(find "$INST/FileHasher.app" -name "._*" | wc -l | tr -d ' ')
+[ "$STRAY" = "0" ] || { echo "ERROR: $STRAY AppleDouble file(s) in the installed copy" >&2; find "$INST/FileHasher.app" -name "._*" >&2; exit 1; }
+codesign --verify --strict --deep "$INST/FileHasher.app" || { echo "ERROR: installed copy fails codesign" >&2; exit 1; }
+xcrun stapler validate "$INST/FileHasher.app" >/dev/null || { echo "ERROR: installed copy has no stapled ticket" >&2; exit 1; }
+spctl --assess --type execute "$INST/FileHasher.app" || { echo "ERROR: Gatekeeper rejects the installed copy" >&2; exit 1; }
+echo "    mounted, dragged out, no stray files, Gatekeeper accepts it"
+rm -rf "$INST" "$STAGE"
 
 echo "==> Sparkle EdDSA signature"
-SIGN_OUT=$("$SPARKLE_BIN/sign_update" "$ZIP")
+SIGN_OUT=$("$SPARKLE_BIN/sign_update" "$DMG")
 echo "    $SIGN_OUT"
 ED_SIG=$(echo "$SIGN_OUT" | grep -oE 'sparkle:edSignature="[^"]+"' | cut -d'"' -f2)
-ZIP_LEN=$(stat -f%z "$ZIP")
+DMG_LEN=$(stat -f%z "$DMG")
 
 echo "==> sha256 sidecars (FileHasher's own format)"
-for f in "$ZIP"; do
+for f in "$DMG"; do
   HASH=$(shasum -a 256 "$f" | awk '{print toupper($1)}')
   printf '%s *%s\n' "$HASH" "$(basename "$f")" > "$f.sha256"
 done
+
+# DRY_RUN=1 builds, notarizes, verifies a real install and signs everything,
+# but publishes nothing. Fabian tests the artifact before it goes up: nothing
+# ships on my verification alone, which is how 1.1.0 and 1.1.1 reached him
+# broken. Re-run without DRY_RUN to publish the same way.
+if [ "${DRY_RUN:-0}" = "1" ]; then
+  echo "==> DRY RUN: not publishing"
+  echo "    DMG:    $DMG"
+  echo "    sha256: $(cat "$DMG.sha256")"
+  echo "    Hand this to Fabian, let him install and run it, and only then"
+  echo "    re-run without DRY_RUN=1 to create the GitHub release."
+  exit 0
+fi
 
 echo "==> GitHub release"
 # A /start/,/end/ range in awk tests the end pattern on the START line too, and
@@ -274,10 +296,10 @@ gh release create "$TAG" \
   --repo fsantiago07044/filehasher-macos \
   --title "FileHasher ${VERSION}" \
   --notes "${NOTES:-See CHANGELOG.md.}" \
-  "$ZIP" "$ZIP.sha256" 2>/dev/null \
-  || gh release upload "$TAG" --repo fsantiago07044/filehasher-macos --clobber "$ZIP" "$ZIP.sha256"
+  "$DMG" "$DMG.sha256" 2>/dev/null \
+  || gh release upload "$TAG" --repo fsantiago07044/filehasher-macos --clobber "$DMG" "$DMG.sha256"
 
-DOWNLOAD_URL="https://github.com/fsantiago07044/filehasher-macos/releases/download/${TAG}/FileHasher-${VERSION}.zip"
+DOWNLOAD_URL="https://github.com/fsantiago07044/filehasher-macos/releases/download/${TAG}/FileHasher-${VERSION}.dmg"
 
 echo "==> Appcast entry"
 DATE_RFC=$(date -R 2>/dev/null || date "+%a, %d %b %Y %H:%M:%S %z")
@@ -295,7 +317,7 @@ publishes it; Sparkle clients read the raw GitHub URL):
       <link>https://fabianasantiago.com/filehasher/</link>
       <enclosure
         url="${DOWNLOAD_URL}"
-        length="${ZIP_LEN}"
+        length="${DMG_LEN}"
         type="application/octet-stream"
         sparkle:edSignature="${ED_SIG}" />
     </item>
