@@ -57,6 +57,23 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(second.sidecarExtension, ".sha512")
     }
 
+    /// The results column names the algorithm the rows were produced with, and
+    /// only a run sets it. At startup there is no run, so a restored SHA512
+    /// used to open under a column headed SHA256: the window describing the
+    /// table as something the engine would never produce.
+    func testRestoringAnAlgorithmRenamesTheResultsColumn() {
+        let first = AppModel(defaults: defaults)
+        first.algorithm = .sha512
+
+        XCTAssertEqual(AppModel(defaults: defaults).hashColumnTitle, "SHA512")
+    }
+
+    /// And the default is still the default, rather than whatever was left in
+    /// the suite by another test.
+    func testTheResultsColumnStartsOnSha256WithNothingSaved() {
+        XCTAssertEqual(AppModel(defaults: defaults).hashColumnTitle, "SHA256")
+    }
+
     /// A hand-edited or future-written value must not leave the app with no
     /// algorithm selected.
     func testUnknownStoredAlgorithmFallsBackToTheDefault() {

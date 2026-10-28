@@ -275,6 +275,12 @@ final class AppModel: ObservableObject {
         // at .sha256.
         algorithmChanged()
 
+        // Same reasoning for the results column. A run names it, and at
+        // startup there is no run, so a restored SHA512 would otherwise sit
+        // under a column headed SHA256: the window stating something about the
+        // results that the engine does not agree with.
+        hashColumnTitle = algorithm.rawValue
+
         isLoading = false
     }
 
