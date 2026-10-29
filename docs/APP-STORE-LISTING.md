@@ -7,7 +7,9 @@ live App Store Connect record is the source of truth for the final wording.
 
 **The two drift.** On 2026-10-21 the live description still read "with optional
 subfolder recursion" while this file had been updated months earlier, so the repo
-copy was not what customers were reading. Before editing the description, pull the
+copy was not what customers were reading. Re-checked 2026-10-29: the live
+description and What's New now match this file exactly, and the 3 screenshots
+are in place; promotional text was the one field out of step (see below). Before editing the description, pull the
 live text rather than trusting this file, and paste the result back here so they
 match. The API path is
 `GET /v1/appStoreVersions/<id>/appStoreVersionLocalizations`; the version ids come
@@ -70,13 +72,26 @@ Promo text changes the live listing **instantly, without review**, so it must
 never describe a build that has not shipped yet. Set it only once the matching
 version is live.
 
-Live since 1.0.1 shipped (2026-08-25):
-`Now universal: runs natively on Apple Silicon and Intel Macs. Hash, sidecar, and verify your files; private by design, no network access at all.` *(144 chars)*
+**It does NOT carry across version records, and nothing warns you.** Checked
+against the live listing on 2026-10-29: 1.0.0 and 1.0.1 both have promotional
+text, and **1.1.0 has none at all**. Creating the 1.1.0 version record dropped
+it, the field was never filled in, and the listing then ran with no promotional
+text from go-live on 2026-10-22 until it was noticed. Unlike the description,
+this field is silent when empty: the store simply shows the description, so
+nothing looks wrong. **Add checking it to the post-approval pass**, and read it
+back from the API rather than assuming, since the web product page does not
+render it:
+`GET /v1/appStoreVersions/<id>/appStoreVersionLocalizations` -> `promotionalText`.
+The Developer-role key can read this; writing it needs App Manager, so the
+value itself goes in through the web UI.
 
-Swap in once **1.1.0** is approved:
+For 1.1.0 (the current live version):
 `Choose how deep a folder scan goes, down to a set number of levels. Hash, sidecar, and verify your files; private by design, no network access at all.` *(150 chars)*
 
-Superseded, kept for the record (pre-1.0.1, before the universal build):
+Superseded, kept for the record (1.0.1, the universal build):
+`Now universal: runs natively on Apple Silicon and Intel Macs. Hash, sidecar, and verify your files; private by design, no network access at all.` *(144 chars)*
+
+Superseded, kept for the record (1.0.0, the initial release):
 `Hash files and folders, write standard sidecar checksums, and verify them any time; private by design, with no network access at all.` *(133 chars)*
 
 ## Keywords (max 100 characters)
